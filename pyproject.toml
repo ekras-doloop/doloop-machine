@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "doloopio"
+version = "0.4.0"
+description = "The doloop resistance machine: deterministic checks for AI output, from the CLI."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+dependencies = ["cryptography>=41"]
+
+[project.scripts]
+doloop = "doloop.cli:main"
+
+[tool.setuptools]
+packages = ["doloop"]
