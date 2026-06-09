@@ -1,0 +1,3256 @@
+{
+  "version": "code-smells-corpus-v1",
+  "source": "doloop canonical research (7 streams + completeness critic)",
+  "entries": [
+    {
+      "id": "CS-001",
+      "name": "Long Method",
+      "category": "Bloater",
+      "description": "A method or function has grown so long that it does too many things and is hard to understand, reuse, test, and change.",
+      "detection": "Executable-LOC per function body > 30-50 (warn) / > 60-100 (fail) via AST function-node span; or cyclomatic complexity > 10; or statement count > 25-50.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Long Function",
+        "God Method",
+        "Brain Method"
+      ],
+      "fix_hint": "Extract Function on cohesive blocks; Replace Temp with Query.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Fowler & Beck, Refactoring (1999/2018)",
+        "PMD ExcessiveMethodLength; ESLint max-lines-per-function"
+      ]
+    },
+    {
+      "id": "CS-002",
+      "name": "Large Class / God Class",
+      "category": "Bloater",
+      "description": "A class is trying to do too much, accumulating too many fields, methods, and responsibilities.",
+      "detection": "Methods/class > 20, fields > 15, or class LOC > 500 (warn) / > 1000 (fail). Lanza God Class: WMC>=47 AND TCC<0.33 AND ATFD>5.",
+      "determinism": "mechanical",
+      "aliases": [
+        "God Object",
+        "Blob"
+      ],
+      "fix_hint": "Extract Class / Extract Subclass / Extract Interface.",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Fowler & Beck, Refactoring",
+        "Lanza & Marinescu (2006)",
+        "DECOR Blob (Moha et al. 2010)"
+      ]
+    },
+    {
+      "id": "CS-003",
+      "name": "Duplicated Code",
+      "category": "Dispensable",
+      "description": "The same or nearly-identical code structure appears in more than one place.",
+      "detection": "Token/AST clone detection (Type-1/2/3): >=6 duplicated statements or >=40-50 tokens with >85% similarity appearing >=2 times.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Copy-Paste Programming",
+        "DRY Violation",
+        "CPD"
+      ],
+      "fix_hint": "Extract Function; Pull Up Method; Form Template Method.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Fowler & Beck, Refactoring",
+        "PMD CPD; SonarQube"
+      ]
+    },
+    {
+      "id": "CS-004",
+      "name": "Long Parameter List",
+      "category": "Bloater",
+      "description": "A method takes so many parameters that callers struggle to understand and supply them correctly.",
+      "detection": "Parameter count > 4 (warn) / > 6 (fail). PMD 10, Checkstyle 7, pylint 5, ESLint 3.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Too Many Parameters",
+        "max-params"
+      ],
+      "fix_hint": "Introduce Parameter Object; Preserve Whole Object; Remove Flag Argument.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Fowler & Beck, Refactoring",
+        "PMD; Checkstyle; ESLint max-params"
+      ]
+    },
+    {
+      "id": "CS-005",
+      "name": "Global Data",
+      "category": "Mutable-State / Coupler",
+      "description": "Data accessible from anywhere can be mutated by any code, making changes impossible to trace.",
+      "detection": "Count module/global-scope mutable bindings, public static mutable fields, singletons with mutable state.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Global State"
+      ],
+      "fix_hint": "Encapsulate Variable; reduce scope; pass state explicitly.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Fowler, Refactoring 2nd ed. (2018)"
+      ]
+    },
+    {
+      "id": "CS-006",
+      "name": "Mutable Data",
+      "category": "Mutable-State",
+      "description": "Data updated in place can be changed where another part assumed it would not.",
+      "detection": "Reassigned vars that could be const/final, shared mutable objects mutated by reference, public mutable fields. Reader judges essential vs incidental.",
+      "determinism": "hybrid",
+      "aliases": [],
+      "fix_hint": "Encapsulate Variable; Split Variable; Change Reference to Value.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Fowler, Refactoring 2nd ed. (2018)"
+      ]
+    },
+    {
+      "id": "CS-007",
+      "name": "Divergent Change",
+      "category": "Change Preventer",
+      "description": "One class is changed in many different ways for many different reasons.",
+      "detection": "A single file/class touched by commits addressing >=3 distinct concern clusters; low cohesion (LCOM4>1). Reader confirms unrelated reasons.",
+      "determinism": "hybrid",
+      "aliases": [],
+      "fix_hint": "Extract Class to split divergent contexts; Split Phase.",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "Fowler & Beck, Refactoring",
+        "Lanza & Marinescu"
+      ]
+    },
+    {
+      "id": "CS-008",
+      "name": "Shotgun Surgery",
+      "category": "Change Preventer",
+      "description": "A single conceptual change forces many small edits scattered across many classes.",
+      "detection": "Version-history: a logical change co-modifies N>5 files; high fan-out dispersion. Reader confirms one change.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Scattered Change"
+      ],
+      "fix_hint": "Move Function / Move Field to gather behavior; Combine Functions into Class.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Fowler & Beck, Refactoring",
+        "Gall et al. change-coupling"
+      ]
+    },
+    {
+      "id": "CS-009",
+      "name": "Feature Envy",
+      "category": "Coupler",
+      "description": "A method is more interested in another class's data than its own.",
+      "detection": "Per method, foreign accesses to one other class vs host; flag foreign>host. Lanza: ATFD>3 AND LAA<0.33 AND FDP<=3.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Misplaced Method"
+      ],
+      "fix_hint": "Move Function to envied class; Extract then Move.",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Fowler & Beck, Refactoring",
+        "JDeodorant; GRASP Information Expert"
+      ]
+    },
+    {
+      "id": "CS-010",
+      "name": "Data Clumps",
+      "category": "Bloater",
+      "description": "The same group of data items keeps appearing together in fields and parameter lists.",
+      "detection": "Identical ordered groups of >=3 params/fields recurring across >=2 signatures (name+type tuple). Warn at 2, fail at 3+.",
+      "determinism": "mechanical",
+      "aliases": [],
+      "fix_hint": "Extract Class; Introduce Parameter Object.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Fowler & Beck, Refactoring",
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-011",
+      "name": "Primitive Obsession",
+      "category": "Bloater",
+      "description": "Primitives represent domain concepts that deserve their own small types.",
+      "detection": "Type-code constants, primitive fields named like domain quantities without wrappers, arrays as records. Reader confirms a concept is a bare primitive.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Stringly-typed code"
+      ],
+      "fix_hint": "Replace Primitive with Object; Replace Type Code with Subclasses.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Fowler & Beck, Refactoring",
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-012",
+      "name": "Repeated Switches / Switch Statement",
+      "category": "Object-Orientation Abuser",
+      "description": "The same conditional switch on a type code recurs in multiple places.",
+      "detection": ">=2 switch/if-else ladders on the same discriminant. Warn at 2, fail at 3+. Reader confirms polymorphism is right.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Type-Checking Conditionals"
+      ],
+      "fix_hint": "Replace Conditional with Polymorphism; State/Strategy; dispatch table.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Fowler & Beck, Refactoring",
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-013",
+      "name": "Loops",
+      "category": "Dispensable",
+      "description": "An explicit imperative loop is used where a collection pipeline would express intent more clearly.",
+      "detection": "Loop bodies matching map/filter/reduce shapes. Reader confirms pure transformation, no early-exit complications.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Imperative Loop over Pipeline"
+      ],
+      "fix_hint": "Replace Loop with Pipeline; Extract Function.",
+      "severity_default": "info",
+      "languages": "languages with collection pipelines",
+      "sources": [
+        "Fowler, Refactoring 2nd ed. (2018)"
+      ]
+    },
+    {
+      "id": "CS-014",
+      "name": "Parallel Inheritance Hierarchies",
+      "category": "Change Preventer",
+      "description": "Adding a subclass to one hierarchy forces a matching subclass in another.",
+      "detection": "Two hierarchies whose subclass name prefixes correspond 1:1 and co-add historically.",
+      "determinism": "hybrid",
+      "aliases": [],
+      "fix_hint": "Move Function/Field so one hierarchy refers to the other; collapse.",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "Fowler & Beck, Refactoring 1st ed. (1999)"
+      ]
+    },
+    {
+      "id": "CS-015",
+      "name": "Lazy Class / Lazy Element",
+      "category": "Dispensable",
+      "description": "A class or element no longer pulls its weight.",
+      "detection": "Class with <=1-2 methods and few fields and few references, or a forwarding-only function.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Freeloader"
+      ],
+      "fix_hint": "Inline Class; Collapse Hierarchy; Inline Function.",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "Fowler & Beck, Refactoring"
+      ]
+    },
+    {
+      "id": "CS-016",
+      "name": "Speculative Generality",
+      "category": "Dispensable",
+      "description": "Machinery added for hypothetical future needs that nobody uses today.",
+      "detection": "Abstract types with a single implementor, unused params/hooks, methods with only test callers, single-impl factory/strategy. Reader confirms no current use.",
+      "determinism": "hybrid",
+      "aliases": [
+        "YAGNI violation",
+        "Over-Engineering"
+      ],
+      "fix_hint": "Collapse Hierarchy; Inline; drop unused params; Remove Dead Code.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Fowler & Beck, Refactoring",
+        "Rastogi 66 Anti-Patterns #56/#57",
+        "arXiv:2510.03029"
+      ]
+    },
+    {
+      "id": "CS-017",
+      "name": "Temporary Field",
+      "category": "Object-Orientation Abuser",
+      "description": "An instance field is meaningful only in certain circumstances.",
+      "detection": "Field assigned/read only inside one method cluster (used by <50% of methods). Reader confirms scratch state vs lazy cache.",
+      "determinism": "hybrid",
+      "aliases": [],
+      "fix_hint": "Extract Class; Introduce Special Case (Null Object).",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "Fowler & Beck, Refactoring"
+      ]
+    },
+    {
+      "id": "CS-018",
+      "name": "Message Chains",
+      "category": "Coupler",
+      "description": "A client navigates a long chain of object-to-object calls.",
+      "detection": "AST chain of >=3 consecutive accessor calls. Warn at depth 3, fail at 4+. Exclude fluent-builder allowlist.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Train Wreck",
+        "Law of Demeter violation"
+      ],
+      "fix_hint": "Hide Delegate; Extract then Move Function.",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Fowler & Beck, Refactoring",
+        "Law of Demeter (Lieberherr)"
+      ]
+    },
+    {
+      "id": "CS-019",
+      "name": "Middle Man",
+      "category": "Coupler",
+      "description": "A class delegates almost all of its work to another.",
+      "detection": "Pure-delegating methods / total methods > 50% (warn) / >75% (fail).",
+      "determinism": "mechanical",
+      "aliases": [
+        "Excessive Delegation"
+      ],
+      "fix_hint": "Remove Middle Man; Inline Function.",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "Fowler & Beck, Refactoring"
+      ]
+    },
+    {
+      "id": "CS-020",
+      "name": "Insider Trading / Inappropriate Intimacy",
+      "category": "Coupler",
+      "description": "Two modules trade private data and reach into each other's internals.",
+      "detection": "Bidirectional coupling: A accesses B's privates AND B accesses A's. Warn when mutual foreign accesses > 3.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Inappropriate Intimacy",
+        "Bidirectional Coupling"
+      ],
+      "fix_hint": "Move Function/Field; Hide Delegate; Replace Inheritance with Delegation.",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Fowler & Beck, Refactoring"
+      ]
+    },
+    {
+      "id": "CS-021",
+      "name": "Alternative Classes with Different Interfaces",
+      "category": "Object-Orientation Abuser",
+      "description": "Two classes do the same job but expose different method names/signatures.",
+      "detection": "High behavior overlap but mismatched names (behavior Jaccard high, name match low), or >=80% identical bodies. Reader confirms equivalence.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Duplicate Abstraction"
+      ],
+      "fix_hint": "Change Function Declaration to align; Extract Superclass.",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "Fowler & Beck, Refactoring",
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-022",
+      "name": "Data Class",
+      "category": "Dispensable",
+      "description": "A class is just fields with getters/setters and no behavior.",
+      "detection": "Methods exclusively accessors while other classes manipulate its fields. Lanza: low WOC, high NOAP+NOAM. Exclude DTO/record allowlist.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Anemic Object",
+        "data holder"
+      ],
+      "fix_hint": "Move Function in; Encapsulate Collection; Remove Setting Method.",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "Fowler & Beck, Refactoring",
+        "Lanza & Marinescu"
+      ]
+    },
+    {
+      "id": "CS-023",
+      "name": "Refused Bequest / Rebellious Hierarchy",
+      "category": "Object-Orientation Abuser",
+      "description": "A subclass uses only some of what it inherits and overrides-to-empty/throw the rest.",
+      "detection": "Override to throw Unsupported/NotImplemented/no-op, or uses <50% of inherited members. Reader decides push-down vs replace-inheritance.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Inappropriate Inheritance"
+      ],
+      "fix_hint": "Push Down Method/Field; Replace Subclass/Superclass with Delegate.",
+      "severity_default": "warn",
+      "languages": "OO languages with inheritance",
+      "sources": [
+        "Fowler & Beck, Refactoring",
+        "Liskov & Wing (1994)"
+      ]
+    },
+    {
+      "id": "CS-024",
+      "name": "Comments (Deodorant)",
+      "category": "Dispensable / Comprehensibility",
+      "description": "Comments used to explain confusing code that should explain itself.",
+      "detection": "High inline-comment density inside method bodies, or a comment preceding an extractable block. Reader distinguishes deodorant from why/contract docs.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Explanatory Comments"
+      ],
+      "fix_hint": "Extract Function; Rename; Introduce Assertion.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Fowler & Beck, Refactoring"
+      ]
+    },
+    {
+      "id": "CS-025",
+      "name": "Incomplete Library Class",
+      "category": "Dispensable / Coupler",
+      "description": "A reused library class lacks a method you need but cannot modify.",
+      "detection": "Many local util functions whose first argument is the same third-party type. Reader confirms missing library capability.",
+      "determinism": "hybrid",
+      "aliases": [],
+      "fix_hint": "Introduce Foreign Method; Introduce Local Extension.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Fowler & Beck, Refactoring 1st ed. (1999)"
+      ]
+    },
+    {
+      "id": "CS-026",
+      "name": "Mysterious Name",
+      "category": "Comprehensibility",
+      "description": "A name fails to clearly and honestly say what it is or does.",
+      "detection": "Single-letter/numbered identifiers outside tiny scopes, abbreviations not in allowlist, names <3 chars for non-loop vars. Reader judges misdescribing names.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Bad Name"
+      ],
+      "fix_hint": "Rename Variable/Field; Change Function Declaration.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Fowler, Refactoring 2nd ed. (2018)"
+      ]
+    },
+    {
+      "id": "CS-027",
+      "name": "Dead Code / Unused Artifacts",
+      "category": "Dispensable",
+      "description": "Code never executed or never referenced.",
+      "detection": "Reachability + use-def: unreferenced privates, unused locals/params, code after return/throw, constant-false conditions. ruff F401/F841; ESLint no-unreachable.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Unreachable Code",
+        "Lava Flow"
+      ],
+      "fix_hint": "Remove Dead Code; enable the linter rule in CI.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Fowler Remove Dead Code (2018)",
+        "PMD/ESLint/ruff",
+        "AntiPatterns Lava Flow"
+      ]
+    },
+    {
+      "id": "CS-028",
+      "name": "High Cyclomatic Complexity",
+      "category": "complexity",
+      "description": "Too many independent linear paths through control flow.",
+      "detection": "Decision points +1. Flag CC>10 (warn) / >15 (fail). PMD 10; ESLint 20.",
+      "determinism": "mechanical",
+      "aliases": [
+        "McCabe complexity",
+        "CC"
+      ],
+      "fix_hint": "Extract branches into named helpers; guard clauses; polymorphism.",
+      "severity_default": "warn",
+      "languages": "all imperative/OO",
+      "sources": [
+        "McCabe, IEEE TSE 1976",
+        "SonarQube S3776"
+      ]
+    },
+    {
+      "id": "CS-029",
+      "name": "High Cognitive Complexity",
+      "category": "complexity",
+      "description": "Control flow hard to follow due to nesting and breaks in linear reading.",
+      "detection": "+1 per linear-flow break plus nesting penalty. Flag score >15.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Sonar cognitive complexity"
+      ],
+      "fix_hint": "Flatten nesting with early returns; extract nested blocks.",
+      "severity_default": "warn",
+      "languages": "all imperative/OO",
+      "sources": [
+        "Campbell, SonarSource 2017; SonarQube S3776"
+      ]
+    },
+    {
+      "id": "CS-030",
+      "name": "High NPath Complexity",
+      "category": "complexity",
+      "description": "Excessive number of distinct acyclic execution paths.",
+      "detection": "Multiply path counts recursively. Flag NPath>200.",
+      "determinism": "mechanical",
+      "aliases": [
+        "NPATH"
+      ],
+      "fix_hint": "Extract sub-methods; table/strategy dispatch.",
+      "severity_default": "warn",
+      "languages": "all imperative/OO",
+      "sources": [
+        "Nejmeh, CACM 1988; PMD NPathComplexity"
+      ]
+    },
+    {
+      "id": "CS-031",
+      "name": "Deep Nesting",
+      "category": "complexity",
+      "description": "Control structures nested too deeply, producing arrow-shaped code.",
+      "detection": "Max block nesting depth >3 (PMD); ESLint max-depth 4. Flag conditions with >4 boolean operators.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Arrow code",
+        "max-depth"
+      ],
+      "fix_hint": "Guard clauses; extract inner blocks; lookup tables.",
+      "severity_default": "warn",
+      "languages": "all imperative/OO",
+      "sources": [
+        "PMD AvoidDeeplyNestedIfStmts; ESLint max-depth",
+        "arXiv:2510.03029"
+      ]
+    },
+    {
+      "id": "CS-032",
+      "name": "Lack of Cohesion (High LCOM)",
+      "category": "OO-abuser / design",
+      "description": "Methods operate on disjoint sets of fields, bundling unrelated responsibilities.",
+      "detection": "LCOM(CK)>0; LCOM4 connected components >1.",
+      "determinism": "mechanical",
+      "aliases": [
+        "LCOM4",
+        "low cohesion"
+      ],
+      "fix_hint": "Split the class along connected method/field clusters.",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Chidamber & Kemerer 1994; Hitz & Montazeri LCOM4"
+      ]
+    },
+    {
+      "id": "CS-033",
+      "name": "Excessive Coupling (High CBO)",
+      "category": "coupler",
+      "description": "A class depends on or is depended on by too many other classes.",
+      "detection": "CBO = distinct non-inheritance classes referenced. Flag >13-20; PMD 20.",
+      "determinism": "mechanical",
+      "aliases": [
+        "CBO",
+        "Tight Coupling"
+      ],
+      "fix_hint": "Introduce interfaces / dependency inversion; Facade.",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Chidamber & Kemerer 1994; Martin 1994"
+      ]
+    },
+    {
+      "id": "CS-034",
+      "name": "High Fan-out / Fan-in / Hub",
+      "category": "coupler",
+      "description": "A module calls or is called by too many others, concentrating change risk.",
+      "detection": "Fan-out>~7, or both CA and CE in top decile (hub).",
+      "determinism": "mechanical",
+      "aliases": [
+        "Hub class"
+      ],
+      "fix_hint": "Introduce mediating facades; split high-fan-out modules.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Henry & Kafura, IEEE TSE 1981",
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-035",
+      "name": "Too Many Methods / Fields",
+      "category": "bloater",
+      "description": "A class declares an excessive number of methods or fields.",
+      "detection": "PMD TooManyMethods 10; TooManyFields 15; WMC>=47.",
+      "determinism": "mechanical",
+      "aliases": [
+        "WMC excess"
+      ],
+      "fix_hint": "Extract Class along cohesive subsets.",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "PMD; Lanza & Marinescu WMC"
+      ]
+    },
+    {
+      "id": "CS-036",
+      "name": "Too Many Branches",
+      "category": "complexity",
+      "description": "A function contains too many decision branches.",
+      "detection": "pylint max-branches default 12.",
+      "determinism": "mechanical",
+      "aliases": [
+        "R0912"
+      ],
+      "fix_hint": "Extract branch groups; dispatch tables.",
+      "severity_default": "warn",
+      "languages": "Python (analogous elsewhere)",
+      "sources": [
+        "pylint R0912"
+      ]
+    },
+    {
+      "id": "CS-037",
+      "name": "Too Many Local Variables",
+      "category": "bloater",
+      "description": "A function declares too many local variables.",
+      "detection": "pylint max-locals default 15.",
+      "determinism": "mechanical",
+      "aliases": [
+        "R0914"
+      ],
+      "fix_hint": "Extract Method; group related locals into an object.",
+      "severity_default": "info",
+      "languages": "Python (analogous)",
+      "sources": [
+        "pylint R0914"
+      ]
+    },
+    {
+      "id": "CS-038",
+      "name": "Too Many Nested Callbacks",
+      "category": "complexity",
+      "description": "Asynchronous callbacks nested too deeply.",
+      "detection": "ESLint max-nested-callbacks default 10 (commonly 3).",
+      "determinism": "mechanical",
+      "aliases": [
+        "callback hell",
+        "pyramid of doom"
+      ],
+      "fix_hint": "Flatten with named functions, Promises, async/await.",
+      "severity_default": "warn",
+      "languages": "JS/TS",
+      "sources": [
+        "ESLint max-nested-callbacks"
+      ]
+    },
+    {
+      "id": "CS-039",
+      "name": "High Halstead Volume / Difficulty / Effort",
+      "category": "complexity",
+      "description": "Operator/operand counts indicate large mental volume.",
+      "detection": "V=(N1+N2)*log2(n1+n2); D=(n1/2)*(N2/n2); E=D*V. Flag outliers.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Halstead metrics"
+      ],
+      "fix_hint": "Decompose; reduce distinct operators/operands.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Halstead 1977; Oman & Hagemeister 1992"
+      ]
+    },
+    {
+      "id": "CS-040",
+      "name": "Low Maintainability Index",
+      "category": "complexity",
+      "description": "Composite of Halstead volume, CC, and LOC indicates costly maintenance.",
+      "detection": "MI=171-5.2lnV-0.23CC-16.2lnLOC. Flag <65 / <20.",
+      "determinism": "mechanical",
+      "aliases": [
+        "MI"
+      ],
+      "fix_hint": "Attack the dominant driver via extraction and simplification.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Oman & Hagemeister 1992; radon"
+      ]
+    },
+    {
+      "id": "CS-041",
+      "name": "Long Class File / Excessive Lines",
+      "category": "bloater",
+      "description": "A source file or class exceeds a sane line budget.",
+      "detection": "ESLint max-lines 300; PMD ExcessiveClassLength 1000; Checkstyle FileLength 2000.",
+      "determinism": "mechanical",
+      "aliases": [
+        "large file"
+      ],
+      "fix_hint": "Split by responsibility; extract collaborators.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "ESLint max-lines; PMD; Checkstyle"
+      ]
+    },
+    {
+      "id": "CS-042",
+      "name": "Spaghetti Code",
+      "category": "complexity",
+      "description": "Tangled control flow, global state, little modularity.",
+      "detection": "DECOR card: high LOC, no params, global use, deep nesting, no polymorphism; CC>15-25, LOC>100, depth>5.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Tangled control flow"
+      ],
+      "fix_hint": "Restructure into cohesive methods; classes/polymorphism.",
+      "severity_default": "warn",
+      "languages": "all (esp. procedural)",
+      "sources": [
+        "AntiPatterns (1998); DECOR (Moha 2010)"
+      ]
+    },
+    {
+      "id": "CS-043",
+      "name": "Functional Decomposition (OO antipattern)",
+      "category": "OO-abuser",
+      "description": "Procedural design forced into verb-named classes with one dominant method.",
+      "detection": "DECOR card: verb class name, single dominant method, globals-as-fields, near-zero polymorphism.",
+      "determinism": "hybrid",
+      "aliases": [
+        "procedural class",
+        "Verb class"
+      ],
+      "fix_hint": "Redesign around cohesive objects with state+behavior.",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "AntiPatterns (1998); DECOR (Moha 2010)"
+      ]
+    },
+    {
+      "id": "CS-044",
+      "name": "Excessive Public Count / Broad API Surface",
+      "category": "coupler",
+      "description": "A class exposes too many public members.",
+      "detection": "PMD ExcessivePublicCount 45; high RFC.",
+      "determinism": "mechanical",
+      "aliases": [
+        "wide interface"
+      ],
+      "fix_hint": "Narrow the public interface; split into role interfaces.",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "PMD; Chidamber & Kemerer RFC"
+      ]
+    },
+    {
+      "id": "CS-045",
+      "name": "Cyclic Dependencies",
+      "category": "coupler",
+      "description": "Modules depend on each other directly or transitively (ADP violation).",
+      "detection": "Import graph cycle detection (Tarjan SCC); flag SCC size >1.",
+      "determinism": "mechanical",
+      "aliases": [
+        "circular dependency",
+        "import cycle"
+      ],
+      "fix_hint": "Dependency Inversion; extract shared part to a third module.",
+      "severity_default": "warn",
+      "languages": "all with modules",
+      "sources": [
+        "Martin ADP; import-linter; SonarQube"
+      ]
+    },
+    {
+      "id": "CS-046",
+      "name": "Incomplete Abstraction",
+      "category": "Abstraction",
+      "description": "An abstraction lacks complementary methods (push but no pop).",
+      "detection": "Check complementary pairs (add/remove, open/close, start/stop) where only one is declared.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Asymmetric API"
+      ],
+      "fix_hint": "Add the missing complementary method(s).",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-047",
+      "name": "Unnecessary Abstraction",
+      "category": "Abstraction",
+      "description": "An abstraction introduced that is not actually needed.",
+      "detection": "Constants-only class, or a type referenced 0-1 times (no non-test callers).",
+      "determinism": "mechanical",
+      "aliases": [
+        "Constants-only class"
+      ],
+      "fix_hint": "Inline or remove; collapse constants into using class/enum.",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-048",
+      "name": "Deficient Encapsulation",
+      "category": "Encapsulation",
+      "description": "Member accessibility is more permissive than required.",
+      "detection": "Public non-final fields; public methods never called externally.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Public fields"
+      ],
+      "fix_hint": "Tighten access modifiers to the minimum required.",
+      "severity_default": "warn",
+      "languages": "OO with access modifiers",
+      "sources": [
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-049",
+      "name": "Leaky Encapsulation",
+      "category": "Encapsulation",
+      "description": "An abstraction exposes implementation details through its interface.",
+      "detection": "Public getter returns a mutable internal collection without copy; internal types in signatures.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Implementation leak"
+      ],
+      "fix_hint": "Return copies/immutable views; intent-revealing operations.",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-050",
+      "name": "Unexploited Encapsulation",
+      "category": "Encapsulation",
+      "description": "Client uses explicit type checks instead of existing polymorphism.",
+      "detection": "instanceof/typeof/GetType chains (>=2) over subtypes of a polymorphic hierarchy.",
+      "determinism": "mechanical",
+      "aliases": [
+        "instanceof chains"
+      ],
+      "fix_hint": "Replace explicit type checks with a polymorphic method.",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-051",
+      "name": "Unnecessary Hierarchy",
+      "category": "Hierarchy",
+      "description": "Inheritance applied where composition would suffice.",
+      "detection": "Subclasses that add/override nothing, or hierarchy used only for data variation.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Inheritance overuse"
+      ],
+      "fix_hint": "Collapse the hierarchy; composition or parameterization.",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-052",
+      "name": "Unfactored Hierarchy",
+      "category": "Hierarchy",
+      "description": "Sibling classes share copy-pasted code that should be pulled up.",
+      "detection": "Clone detection scoped to siblings: near-identical bodies (>=85%) in >=2 siblings.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Sibling duplication"
+      ],
+      "fix_hint": "Pull duplicated members up to the superclass.",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-053",
+      "name": "Wide Hierarchy",
+      "category": "Hierarchy",
+      "description": "An inheritance hierarchy is too wide.",
+      "detection": "NOC above threshold (e.g. >10) where subgroups share features.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Excessive breadth"
+      ],
+      "fix_hint": "Introduce intermediate abstractions.",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-054",
+      "name": "Deep Hierarchy",
+      "category": "Hierarchy",
+      "description": "An inheritance hierarchy is excessively deep.",
+      "detection": "DIT above threshold (e.g. >5 for non-framework code).",
+      "determinism": "mechanical",
+      "aliases": [
+        "High DIT",
+        "Yo-yo problem"
+      ],
+      "fix_hint": "Flatten; favor composition over deep inheritance.",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "Suryanarayana et al. (2014); Chidamber & Kemerer DIT"
+      ]
+    },
+    {
+      "id": "CS-055",
+      "name": "Broken Hierarchy",
+      "category": "Hierarchy",
+      "description": "Supertype and subtype do not share an is-a relationship.",
+      "detection": "Subtype shares no client-facing behavior and is never used polymorphically. Requires reader judgment on is-a.",
+      "determinism": "bounded-reader",
+      "aliases": [
+        "No is-a relation"
+      ],
+      "fix_hint": "Replace inheritance with composition/delegation.",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-056",
+      "name": "Multipath Hierarchy",
+      "category": "Hierarchy",
+      "description": "A subtype inherits both directly and indirectly from a supertype (diamond).",
+      "detection": "Supertype reachable from a subtype via >=2 distinct paths in the inheritance DAG.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Diamond problem"
+      ],
+      "fix_hint": "Single inheritance path; interfaces or composition.",
+      "severity_default": "info",
+      "languages": "C++, Python, Eiffel; multiple default methods",
+      "sources": [
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-057",
+      "name": "Cyclic Hierarchy",
+      "category": "Hierarchy",
+      "description": "A supertype depends on one of its subtypes.",
+      "detection": "Reference from a base type to any descendant type (base->derived edge).",
+      "determinism": "mechanical",
+      "aliases": [
+        "Supertype depends on subtype"
+      ],
+      "fix_hint": "Invert the dependency; introduce an abstraction/callback.",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-058",
+      "name": "Single Responsibility Principle Violation",
+      "category": "SOLID",
+      "description": "A class has more than one reason to change.",
+      "detection": "Low cohesion (LCOM4>1) plus high WMC; or Divergent Change history.",
+      "determinism": "hybrid",
+      "aliases": [
+        "SRP violation"
+      ],
+      "fix_hint": "Extract Class so each has one reason to change.",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Martin, Clean Architecture (2017)"
+      ]
+    },
+    {
+      "id": "CS-059",
+      "name": "Open/Closed Principle Violation",
+      "category": "SOLID",
+      "description": "Adding a variant requires modifying existing code rather than extending.",
+      "detection": "Same discriminator switch repeated across methods/files; Shotgun Surgery churn.",
+      "determinism": "hybrid",
+      "aliases": [
+        "OCP violation"
+      ],
+      "fix_hint": "Introduce polymorphism/Strategy.",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Meyer (1988); Martin SOLID"
+      ]
+    },
+    {
+      "id": "CS-060",
+      "name": "Liskov Substitution Principle Violation",
+      "category": "SOLID",
+      "description": "A subtype cannot substitute for its base type without altering correctness.",
+      "detection": "Override throwing Unsupported/NotImplemented, narrowing args, covariant null. Full contract checks need a reader.",
+      "determinism": "hybrid",
+      "aliases": [
+        "LSP violation"
+      ],
+      "fix_hint": "Honor the base contract or use composition.",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Liskov & Wing (1994); Martin SOLID"
+      ]
+    },
+    {
+      "id": "CS-061",
+      "name": "Interface Segregation Principle Violation",
+      "category": "SOLID",
+      "description": "Clients depend on interface methods they do not use.",
+      "detection": "Interface NOM>~10 where implementers stub >30% or clients call a small fraction.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Fat interface"
+      ],
+      "fix_hint": "Split into role-specific interfaces.",
+      "severity_default": "warn",
+      "languages": "OO with interfaces",
+      "sources": [
+        "Martin SOLID"
+      ]
+    },
+    {
+      "id": "CS-062",
+      "name": "Dependency Inversion Principle Violation",
+      "category": "SOLID",
+      "description": "High-level policy depends directly on low-level concretes.",
+      "detection": "Policy class news/imports concrete low-level classes (DB drivers, IO) rather than interfaces.",
+      "determinism": "mechanical",
+      "aliases": [
+        "DIP violation"
+      ],
+      "fix_hint": "Depend on abstractions; inject concretes.",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Martin SOLID"
+      ]
+    },
+    {
+      "id": "CS-063",
+      "name": "Anemic Domain Model",
+      "category": "AntiPattern",
+      "description": "Domain objects are data containers while logic lives in service classes.",
+      "detection": "Domain package mostly Data Classes plus a thick service layer with Feature Envy toward them.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Behaviorless domain"
+      ],
+      "fix_hint": "Relocate business rules into entities; thin the service layer.",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "Fowler, AnemicDomainModel (2003)"
+      ]
+    },
+    {
+      "id": "CS-064",
+      "name": "Golden Hammer",
+      "category": "AntiPattern",
+      "description": "A familiar tool/pattern is applied to every problem regardless of fit.",
+      "detection": "Reader: is this tool/pattern a poor fit, used mainly out of familiarity?",
+      "determinism": "bounded-reader",
+      "aliases": [
+        "Law of the Instrument"
+      ],
+      "fix_hint": "Choose tools by problem fit; diversify.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "AntiPatterns (1998); Maslow"
+      ]
+    },
+    {
+      "id": "CS-065",
+      "name": "Poltergeist",
+      "category": "AntiPattern",
+      "description": "Short-lived stateless classes that only invoke methods on others.",
+      "detection": "Class with NOF<=1, transient lifecycle, high pass-through ratio.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Gypsy Wagon"
+      ],
+      "fix_hint": "Inline Class into the classes it orchestrates.",
+      "severity_default": "info",
+      "languages": "OO languages",
+      "sources": [
+        "AntiPatterns (1998)"
+      ]
+    },
+    {
+      "id": "CS-066",
+      "name": "Boat Anchor",
+      "category": "AntiPattern",
+      "description": "Software/dependency retained though it serves no purpose.",
+      "detection": "Declared dependencies/imports with zero references; vendored libs not linked.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Unused dependency"
+      ],
+      "fix_hint": "Remove unused dependencies and components.",
+      "severity_default": "info",
+      "languages": "all / build systems",
+      "sources": [
+        "AntiPatterns (1998)"
+      ]
+    },
+    {
+      "id": "CS-067",
+      "name": "Dead End",
+      "category": "AntiPattern",
+      "description": "A reused component is forked and can no longer be maintained upstream.",
+      "detection": "Locally patched third-party/vendored code (diff vs upstream non-empty).",
+      "determinism": "mechanical",
+      "aliases": [
+        "Orphaned fork"
+      ],
+      "fix_hint": "Contribute upstream or wrap/extend rather than fork.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "AntiPatterns (1998)"
+      ]
+    },
+    {
+      "id": "CS-068",
+      "name": "Magic Number / Magic Literal",
+      "category": "obfuscation / maintainability",
+      "description": "Unexplained numeric/string literals and hardcoded paths/URLs/timeouts embedded inline.",
+      "detection": "Numeric literals outside {-1,0,1,2} in conditionals/arithmetic without a named binding; absolute paths and full URLs in code.",
+      "determinism": "mechanical",
+      "aliases": [
+        "unnamed constant",
+        "Hardcoded Paths/URLs"
+      ],
+      "fix_hint": "Promote literals to named constants or configuration.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Checkstyle MagicNumber; ESLint no-magic-numbers",
+        "arXiv:2510.03029"
+      ]
+    },
+    {
+      "id": "CS-069",
+      "name": "Empty Catch / Silent Error Swallowing",
+      "category": "error-handling",
+      "description": "An exception is caught and silently discarded.",
+      "detection": "Catch/except body empty, pass, continue, bare return None; broad except. PMD EmptyCatchBlock; SonarQube S108/S2486.",
+      "determinism": "mechanical",
+      "aliases": [
+        "exception swallowing",
+        "Bare Except"
+      ],
+      "fix_hint": "Catch the narrowest type; log or re-raise with context.",
+      "severity_default": "warn",
+      "languages": "exception-based languages",
+      "sources": [
+        "PMD; SonarQube S108/S2486; ESLint no-empty",
+        "arXiv:2409.19182"
+      ]
+    },
+    {
+      "id": "CS-070",
+      "name": "Commented-out Code",
+      "category": "comment smell",
+      "description": "Source disabled by commenting rather than deletion.",
+      "detection": "Strip the comment marker and parse; if it parses as code (or matches code-shaped heuristics) flag. SonarQube S125.",
+      "determinism": "mechanical",
+      "aliases": [
+        "zombie code in comments"
+      ],
+      "fix_hint": "Delete it; version control preserves history.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "EMSE 2024 taxonomy; SonarQube S125"
+      ]
+    },
+    {
+      "id": "CS-071",
+      "name": "Missing Abstraction (encoded-string data)",
+      "category": "Abstraction",
+      "description": "Encoded strings/primitives used instead of a class for the concept.",
+      "detection": "String-encoded structured data parsed into fields; repeated primitive groups (>=3 across >=2 methods).",
+      "determinism": "mechanical",
+      "aliases": [
+        "String-encoded structured data"
+      ],
+      "fix_hint": "Introduce a value object (Replace Data Value with Object).",
+      "severity_default": "warn",
+      "languages": "OO languages",
+      "sources": [
+        "Suryanarayana et al. (2014)"
+      ]
+    },
+    {
+      "id": "CS-072",
+      "name": "The || Operator Plague",
+      "category": "error-handling",
+      "description": "Missing/malformed data masked behind long chains of ||/?? fallbacks.",
+      "detection": ">=2 chained ||/?? terminating in a literal default. 2+ = warn; 3+ = fail.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Chained Or-Default",
+        "Defensive Defaulting"
+      ],
+      "fix_hint": "Validate once at the boundary; raise on absence; at most one default.",
+      "severity_default": "warn",
+      "languages": "JS/TS, Python, PHP, Ruby",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #6"
+      ]
+    },
+    {
+      "id": "CS-073",
+      "name": "Variable variable_names",
+      "category": "maintainability",
+      "description": "Excessive dynamic/computed property access defeating static analysis.",
+      "detection": "Dynamic member-access ratio >15%, or any eval/exec/Function to build identifiers.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Computed Field Names"
+      ],
+      "fix_hint": "Explicit fields or a typed map/enum.",
+      "severity_default": "warn",
+      "languages": "JS/TS, Python, PHP, Ruby",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #7"
+      ]
+    },
+    {
+      "id": "CS-074",
+      "name": "Content in Code",
+      "category": "maintainability",
+      "description": "Long-form documentation embedded in source, drowning logic.",
+      "detection": "Comment lines >40% AND a single comment block >30 lines, plus prose detection.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Prose-in-Source"
+      ],
+      "fix_hint": "Move narrative to docs/; leave terse why-comments.",
+      "severity_default": "info",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #8"
+      ]
+    },
+    {
+      "id": "CS-075",
+      "name": "Field Mapping Madness",
+      "category": "architecture",
+      "description": "Converter layers translate between divergent field names instead of fixing the schema.",
+      "detection": "Functions predominantly out.X=in.Y rename assignments; >=3 mappers or same field under >=3 names.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Field-Rename Shims"
+      ],
+      "fix_hint": "Normalize the schema at the source; delete shims.",
+      "severity_default": "warn",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #9"
+      ]
+    },
+    {
+      "id": "CS-076",
+      "name": "Bandaid Fixes",
+      "category": "architecture",
+      "description": "Converters/guards/middleware stacked around a symptom instead of root cause.",
+      "detection": "Wrapper whose only logic is null-guarding/reshaping an unchanged callee; same file in >=3 successive fix commits.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Patch-Over-Root-Cause"
+      ],
+      "fix_hint": "Trace to the originating contract and fix there.",
+      "severity_default": "warn",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #10; arXiv:2409.19182"
+      ]
+    },
+    {
+      "id": "CS-077",
+      "name": "File Version Proliferation",
+      "category": "version-control / repo-hygiene",
+      "description": "foo-v2/foo-FINAL variants created instead of using git branches.",
+      "detection": "Basename regex for v\\d+/copy/final/clean/backup/old suffixes; two files with identical stem differing only by such suffix.",
+      "determinism": "mechanical",
+      "aliases": [
+        "final_v2 anti-pattern"
+      ],
+      "fix_hint": "Delete the variant; use git branches/tags.",
+      "severity_default": "warn",
+      "languages": "language-agnostic (filesystem)",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #11"
+      ]
+    },
+    {
+      "id": "CS-078",
+      "name": "Fake Data Generation / Mock Data Left In",
+      "category": "correctness",
+      "description": "Invented placeholder content or mocks/stubs left in production paths.",
+      "detection": "Sentinel literals (lorem ipsum, John Doe, example.com), mock/stub/fixture identifiers, canned returns, test URLs/keys; especially in except branches.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Synthetic Placeholder Output",
+        "Stub Endpoint Left Live"
+      ],
+      "fix_hint": "On failure propagate the error; confine mocks to test dirs.",
+      "severity_default": "fail",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #12; arXiv:2603.28592"
+      ]
+    },
+    {
+      "id": "CS-079",
+      "name": "Template Defaulting",
+      "category": "correctness",
+      "description": "Generic template text returned in place of real content.",
+      "detection": "Compare output against template registry; flag unfilled tokens ({{ }}, <placeholder>, TODO: fill).",
+      "determinism": "mechanical",
+      "aliases": [
+        "Boilerplate Output"
+      ],
+      "fix_hint": "Fail explicitly when real content is unavailable.",
+      "severity_default": "warn",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #13"
+      ]
+    },
+    {
+      "id": "CS-080",
+      "name": "Uncommitted Experiments",
+      "category": "version-control",
+      "description": "Significant changes made without committing, losing rollback points.",
+      "detection": "Working tree >~200 changed lines or >~8 files with no commit in the session.",
+      "determinism": "mechanical",
+      "aliases": [
+        "No-Commit Drift"
+      ],
+      "fix_hint": "Commit in atomic working increments.",
+      "severity_default": "info",
+      "languages": "language-agnostic (git)",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #14"
+      ]
+    },
+    {
+      "id": "CS-081",
+      "name": "Improvement Disease",
+      "category": "process",
+      "description": "The model changes working systems nobody asked it to touch.",
+      "detection": "Files modified outside the task scope; hunks unrelated to the stated change. Reader lists unrelated changes.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Unrequested Refactor"
+      ],
+      "fix_hint": "Limit edits to the requested scope.",
+      "severity_default": "warn",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #15"
+      ]
+    },
+    {
+      "id": "CS-082",
+      "name": "Theater / Simulation",
+      "category": "correctness",
+      "description": "Systems presented as autonomous but require hidden human intervention.",
+      "detection": "Reader over claimed-autonomous entrypoints; flag input()/manual prompts in code labeled automated.",
+      "determinism": "bounded-reader",
+      "aliases": [
+        "Automation Theater"
+      ],
+      "fix_hint": "Make manual steps explicit gates or close the loop.",
+      "severity_default": "info",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #16"
+      ]
+    },
+    {
+      "id": "CS-083",
+      "name": "Subagent Write Access",
+      "category": "process",
+      "description": "Subagents granted direct production write rights, producing unreviewed changes.",
+      "detection": "Agent/tool configs granting write/exec to production paths without a review gate.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Unreviewed Agent Writes"
+      ],
+      "fix_hint": "Route subagent output through diffs/PRs with review.",
+      "severity_default": "warn",
+      "languages": "language-agnostic (tooling)",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #19"
+      ]
+    },
+    {
+      "id": "CS-084",
+      "name": "Schema Distrust",
+      "category": "maintainability",
+      "description": "Defensive checks re-validate data an upstream layer already guaranteed.",
+      "detection": "Re-validation immediately after a typed validator; repeated identical guards across call depth.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Redundant Revalidation"
+      ],
+      "fix_hint": "Trust the validated boundary; assert once at the edge.",
+      "severity_default": "info",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #34"
+      ]
+    },
+    {
+      "id": "CS-085",
+      "name": "Loose Schema Tolerance",
+      "category": "correctness",
+      "description": "Non-compliant data passes through instead of being rejected.",
+      "detection": "Validator configs set to ignore/strip/coerce silently; parse error branch empty.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Permissive Parsing"
+      ],
+      "fix_hint": "Enforce strict validation at ingestion; reject and log.",
+      "severity_default": "warn",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #46; arXiv:2601.16839"
+      ]
+    },
+    {
+      "id": "CS-086",
+      "name": "Multiple Truth Sources",
+      "category": "architecture",
+      "description": "The same definition/constant declared in several files.",
+      "detection": "Same struct/enum/constant in >=2 modules; duplicate field-lists with >0.8 overlap.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Duplicate Source of Truth"
+      ],
+      "fix_hint": "Define once in a shared module and import.",
+      "severity_default": "warn",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #47"
+      ]
+    },
+    {
+      "id": "CS-087",
+      "name": "Format Proliferation",
+      "category": "architecture",
+      "description": "Multiple formats for the same data supported in parallel.",
+      "detection": ">=2 parser/serializer impls for the same entity, or if format==... ladders with >=3 arms.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Parser Multiplication"
+      ],
+      "fix_hint": "Pick one canonical format; convert at the boundary.",
+      "severity_default": "info",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #48"
+      ]
+    },
+    {
+      "id": "CS-088",
+      "name": "Migration Avoidance",
+      "category": "maintainability",
+      "description": "Old formats left in place rather than migrated.",
+      "detection": "Both *_legacy and current impls for the same feature; deprecated call sites persisting N commits after a marker.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Unfinished Migration"
+      ],
+      "fix_hint": "Complete the migration and delete the legacy path.",
+      "severity_default": "info",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #49"
+      ]
+    },
+    {
+      "id": "CS-089",
+      "name": "Test-Free Development",
+      "category": "testing",
+      "description": "Code written with no automated validation.",
+      "detection": "New non-trivial modules with zero corresponding test file or zero covering tests.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Untested Code"
+      ],
+      "fix_hint": "Add tests covering new behavior including a failure path.",
+      "severity_default": "warn",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #50; arXiv:2510.03029"
+      ]
+    },
+    {
+      "id": "CS-090",
+      "name": "Happy Path Only",
+      "category": "testing",
+      "description": "Tests exercise only success cases.",
+      "detection": "Suites with zero assertions expecting raised exceptions/error returns/boundary inputs; negative:positive ratio <0.1.",
+      "determinism": "mechanical",
+      "aliases": [
+        "No Sad Path"
+      ],
+      "fix_hint": "Add tests for empty/null/oversized/malformed inputs.",
+      "severity_default": "warn",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #52"
+      ]
+    },
+    {
+      "id": "CS-091",
+      "name": "Integration Skipping",
+      "category": "testing",
+      "description": "Units tested in isolation but the integrated pipeline never exercised.",
+      "detection": "100% unit-level suite (no test touches >=2 real modules); mocked deps > real deps.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Over-Mocking"
+      ],
+      "fix_hint": "Add integration tests across the seam.",
+      "severity_default": "info",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #53"
+      ]
+    },
+    {
+      "id": "CS-092",
+      "name": "Monolithic / Oversized Commit",
+      "category": "commit-atomicity / version-control",
+      "description": "A single commit changes an unusually large number of files or lines.",
+      "detection": "files>30 OR added+deleted>800, or >95th percentile churn, excluding generated/vendored/merge.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Mega-Commit",
+        "big-bang commit"
+      ],
+      "fix_hint": "Break into smaller reviewable, revertable commits.",
+      "severity_default": "warn",
+      "languages": "language-agnostic (git)",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #27; arXiv:1606.00521"
+      ]
+    },
+    {
+      "id": "CS-093",
+      "name": "Documentation Lag",
+      "category": "documentation",
+      "description": "Code evolves ahead of its documentation.",
+      "detection": "Public symbols undocumented (<70%); signatures changed while adjacent docstring unchanged.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Stale Docs"
+      ],
+      "fix_hint": "Update docs in the same change that alters the interface.",
+      "severity_default": "info",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #28"
+      ]
+    },
+    {
+      "id": "CS-094",
+      "name": "Captain's Log Neglect",
+      "category": "documentation",
+      "description": "Architectural decision audit trail not updated.",
+      "detection": "Architecture-significant changes with no ADR/decision-log entry in the PR.",
+      "determinism": "hybrid",
+      "aliases": [
+        "No ADR Trail"
+      ],
+      "fix_hint": "Record an ADR for every architecture-significant decision.",
+      "severity_default": "info",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #37"
+      ]
+    },
+    {
+      "id": "CS-095",
+      "name": "Preamble / Postamble",
+      "category": "code-style",
+      "description": "Conversational explanation, apologies, or step-narration in source/comments.",
+      "detection": "Comment regex for LLM tells (here's, let me, as you can see, I apologize, sure!); step-narration mirroring the next line.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Chatty Comments",
+        "Step-Narration Comments"
+      ],
+      "fix_hint": "Delete narration; keep only why-comments.",
+      "severity_default": "info",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #38"
+      ]
+    },
+    {
+      "id": "CS-096",
+      "name": "Fake Acknowledgments / Phantom References",
+      "category": "correctness",
+      "description": "Code/comments reference files or data that do not exist.",
+      "detection": "Resolve every path/URL/import in comments and code; flag unresolved.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Dangling File Paths"
+      ],
+      "fix_hint": "Verify references resolve; remove or correct.",
+      "severity_default": "warn",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #41"
+      ]
+    },
+    {
+      "id": "CS-097",
+      "name": "Delete-First Mentality",
+      "category": "version-control",
+      "description": "Code deleted before being committed, making it unrecoverable.",
+      "detection": "Commit/working-tree deleting a file whose content was never committed; large net-deletion with no prior commit.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Irreversible Removal"
+      ],
+      "fix_hint": "Commit first, then delete in a separate revertible change.",
+      "severity_default": "info",
+      "languages": "language-agnostic (git)",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #43"
+      ]
+    },
+    {
+      "id": "CS-098",
+      "name": "Hallucinated Imports & APIs",
+      "category": "correctness",
+      "description": "Code imports packages or calls symbols that do not exist.",
+      "detection": "Cross-check imports against lockfile/registry and called symbols against the resolved package API via AST/stub resolution. The canonical deterministic check.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Slopsquatting Surface",
+        "Phantom Dependency"
+      ],
+      "fix_hint": "Pin and verify dependencies; replace unresolved symbols.",
+      "severity_default": "fail",
+      "languages": "Python, JS/TS; any with a registry",
+      "sources": [
+        "Spracklen et al.; arXiv:2504.20799"
+      ]
+    },
+    {
+      "id": "CS-099",
+      "name": "Placeholder / TODO Leakage",
+      "category": "correctness",
+      "description": "Generated code ships with placeholder markers meant for a human.",
+      "detection": "Regex: TODO/FIXME/XXX/HACK, ...rest of code, your code here, lone pass/NotImplementedError. Match=warn; ellipsis-elided body=fail.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Rest-of-the-Code Ellipsis",
+        "Unfinished Stub"
+      ],
+      "fix_hint": "Complete elided sections; treat placeholders as build failures.",
+      "severity_default": "fail",
+      "languages": "language-agnostic",
+      "sources": [
+        "Rastogi 66 Anti-Patterns #13; arXiv:2603.28592"
+      ]
+    },
+    {
+      "id": "CS-100",
+      "name": "Inconsistent Style at the Seams",
+      "category": "code-style",
+      "description": "AI-inserted code uses different conventions than the surrounding file.",
+      "detection": "Run the repo formatter/linter on the diff only; detect intra-file mixing (snake vs camel, quote style) in the new hunk.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Stitching Mismatch"
+      ],
+      "fix_hint": "Run the project formatter; match existing conventions.",
+      "severity_default": "info",
+      "languages": "language-agnostic",
+      "sources": [
+        "arXiv:2603.27130; arXiv:2603.28592"
+      ]
+    },
+    {
+      "id": "CS-101",
+      "name": "Authoritative-But-Wrong Comments",
+      "category": "documentation / doc-code drift",
+      "description": "Comments confidently state claims the code does not do.",
+      "detection": "Mechanical: comment unchanged while its scope code changed; doc param/return mismatch. Reader: does this comment describe the code? CONSISTENT/INCONSISTENT.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Comment-Code Mismatch"
+      ],
+      "fix_hint": "Make the comment match the code or delete it.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Tan et al. iComment (2012); EMSE 2024 taxonomy"
+      ]
+    },
+    {
+      "id": "CS-102",
+      "name": "Wildcard / Unpinned Dependency Versions",
+      "category": "build",
+      "description": "Open-ended version specifiers make builds non-reproducible.",
+      "detection": "Manifests with *, +, latest, unpinned ^/~ on critical deps, or FROM image:latest.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Floating Versions"
+      ],
+      "fix_hint": "Pin exact versions; commit a lockfile.",
+      "severity_default": "warn",
+      "languages": "build manifests",
+      "sources": [
+        "arXiv:2601.16839"
+      ]
+    },
+    {
+      "id": "CS-103",
+      "name": "TODO/FIXME Density (SATD)",
+      "category": "comment smell",
+      "description": "Comments self-admitting incomplete/defective work.",
+      "detection": "Regex TODO|FIXME|HACK|XXX|BUG|KLUDGE; per-KLOC density. Warn >5/KLOC; fail on tags older than configured age.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Self-Admitted Technical Debt"
+      ],
+      "fix_hint": "Convert each into a tracked issue or resolve and remove.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Potdar & Shihab (2014); MAT"
+      ]
+    },
+    {
+      "id": "CS-104",
+      "name": "Obsolete / Completed TODO",
+      "category": "comment smell",
+      "description": "A task comment whose work has already been done.",
+      "detection": "Annotation pre-filter, then reader: has the task been completed? DONE/PENDING. Fallback: TODO referencing a removed symbol.",
+      "determinism": "hybrid",
+      "aliases": [
+        "stale task annotation"
+      ],
+      "fix_hint": "Remove if complete; otherwise link to a tracking item.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Sridhara; arXiv:2405.06225"
+      ]
+    },
+    {
+      "id": "CS-105",
+      "name": "Redundant / Obvious Comment",
+      "category": "comment smell",
+      "description": "A comment restating what the code already says.",
+      "detection": "Normalize comment and annotated statement; flag Jaccard>=0.6 with no new token (// increment i above i++).",
+      "determinism": "mechanical",
+      "aliases": [
+        "parroting comment"
+      ],
+      "fix_hint": "Delete or replace with the why.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "EMSE 2024 taxonomy; Clean Code"
+      ]
+    },
+    {
+      "id": "CS-106",
+      "name": "Missing Docstring on Public Symbol",
+      "category": "missing documentation",
+      "description": "An exported symbol lacks any documentation comment.",
+      "detection": "AST: each public declaration must have an attached doc-comment; doc-coverage %. Fail <90%.",
+      "determinism": "mechanical",
+      "aliases": [
+        "doc coverage gap"
+      ],
+      "fix_hint": "Add a docstring describing purpose, params, returns, raises.",
+      "severity_default": "warn",
+      "languages": "Python, Java, Go, TS, C#, Rust",
+      "sources": [
+        "pydocstyle D1xx; interrogate; Javadoc doclint"
+      ]
+    },
+    {
+      "id": "CS-107",
+      "name": "Documented Parameter Does Not Exist",
+      "category": "doc-code drift",
+      "description": "The docstring documents a parameter absent from the signature.",
+      "detection": "AST+doc parse: documented param set minus actual signature set; flag doc\\sig.",
+      "determinism": "mechanical",
+      "aliases": [
+        "@param drift"
+      ],
+      "fix_hint": "Remove or rename the stale @param.",
+      "severity_default": "warn",
+      "languages": "Python, Java, TS, C#, PHP, Ruby",
+      "sources": [
+        "darglint; pydoclint; DocPrism"
+      ]
+    },
+    {
+      "id": "CS-108",
+      "name": "Undocumented / Missing Parameter or Return",
+      "category": "doc-code drift",
+      "description": "A signature param, return, or raise is not documented.",
+      "detection": "sig\\doc difference; return-tag presence; raise/throw tags vs statically-collected raises.",
+      "determinism": "mechanical",
+      "aliases": [
+        "missing @param"
+      ],
+      "fix_hint": "Document every param, return, and raised exception.",
+      "severity_default": "warn",
+      "languages": "Python, Java, TS, C#, PHP",
+      "sources": [
+        "darglint DAR101/201/401; pydoclint"
+      ]
+    },
+    {
+      "id": "CS-109",
+      "name": "Documented Parameter Type Mismatch",
+      "category": "doc-code drift",
+      "description": "Documented type differs from the code annotation.",
+      "detection": "Normalize doc and code types (Optional[X] vs X|None) and compare. Hybrid where doc type is prose.",
+      "determinism": "hybrid",
+      "aliases": [
+        "doc type drift"
+      ],
+      "fix_hint": "Align documented type with the annotation or drop it.",
+      "severity_default": "warn",
+      "languages": "Python (typed), TS, Java, C#",
+      "sources": [
+        "pydoclint; DocPrism"
+      ]
+    },
+    {
+      "id": "CS-110",
+      "name": "Doc Example Does Not Parse",
+      "category": "doc example drift",
+      "description": "A doc code example fails to parse in its declared language.",
+      "detection": "Extract tagged fenced blocks/doctests, parse in check-only mode; flag failures. Deterministic given a pinned parser.",
+      "determinism": "mechanical",
+      "aliases": [
+        "unparseable snippet"
+      ],
+      "fix_hint": "Fix the snippet or mark it non-executable.",
+      "severity_default": "warn",
+      "languages": "any with a parser",
+      "sources": [
+        "doctest; rustdoc; mdBook test"
+      ]
+    },
+    {
+      "id": "CS-111",
+      "name": "Doc Example Output Mismatch",
+      "category": "doc example drift",
+      "description": "An executable doc example produces output differing from the shown output.",
+      "detection": "Run in a pinned runtime; compare stdout/return byte-for-byte. Deterministic when runtime/seeds pinned.",
+      "determinism": "mechanical",
+      "aliases": [
+        "doctest failure"
+      ],
+      "fix_hint": "Update expected output or fix the regression.",
+      "severity_default": "warn",
+      "languages": "Python doctest, Rust rustdoc",
+      "sources": [
+        "Python doctest; Sphinx doctest"
+      ]
+    },
+    {
+      "id": "CS-112",
+      "name": "Doc References Nonexistent Symbol",
+      "category": "doc-code drift",
+      "description": "Documentation references a symbol that no longer exists.",
+      "detection": "Parse cross-ref tokens (:func:, {@link}, backtick identifiers) and resolve against the AST symbol table.",
+      "determinism": "mechanical",
+      "aliases": [
+        "broken cross-reference"
+      ],
+      "fix_hint": "Update to the current name or remove the stale mention.",
+      "severity_default": "warn",
+      "languages": "all (Sphinx, Javadoc, JSDoc)",
+      "sources": [
+        "Sphinx nitpicky; DocPrism; DocChecker"
+      ]
+    },
+    {
+      "id": "CS-113",
+      "name": "Endpoint in Code Missing from OpenAPI Spec",
+      "category": "API-spec drift",
+      "description": "A route in code has no entry in the OpenAPI spec.",
+      "detection": "Enumerate routes from framework decorators into (method,path) set; diff code\\spec.",
+      "determinism": "mechanical",
+      "aliases": [
+        "shadow endpoint"
+      ],
+      "fix_hint": "Add the path to the spec or generate it from code.",
+      "severity_default": "warn",
+      "languages": "Flask, FastAPI, Express, Spring, Rails",
+      "sources": [
+        "oasdiff; Dredd; Cisco Panoptica"
+      ]
+    },
+    {
+      "id": "CS-114",
+      "name": "Spec Endpoint Missing from Code",
+      "category": "API-spec drift",
+      "description": "The spec declares a path with no implementing handler.",
+      "detection": "Set difference spec\\code over (method,path) keys.",
+      "determinism": "mechanical",
+      "aliases": [
+        "zombie spec path"
+      ],
+      "fix_hint": "Implement the endpoint or remove the obsolete path.",
+      "severity_default": "warn",
+      "languages": "frameworks with an OpenAPI contract",
+      "sources": [
+        "Speakeasy; oasdiff"
+      ]
+    },
+    {
+      "id": "CS-115",
+      "name": "Documented Request/Response Param Not in Code",
+      "category": "API-spec drift",
+      "description": "A spec param/field is absent from or differently typed than the model.",
+      "detection": "Extract params/fields+types from spec vs handler/validation model; flag set-diffs and type mismatches.",
+      "determinism": "mechanical",
+      "aliases": [
+        "rogue spec parameter"
+      ],
+      "fix_hint": "Reconcile spec params/types with the request/response models.",
+      "severity_default": "warn",
+      "languages": "frameworks with typed models",
+      "sources": [
+        "Cisco Panoptica; oasdiff"
+      ]
+    },
+    {
+      "id": "CS-116",
+      "name": "README Usage Drift",
+      "category": "doc-code drift",
+      "description": "README commands/flags/env vars/paths no longer match the code.",
+      "detection": "Extract from README: CLI flags (vs argparse/click), env vars (vs reads), paths (existence), imports (vs manifest).",
+      "determinism": "hybrid",
+      "aliases": [
+        "stale README command"
+      ],
+      "fix_hint": "Regenerate usage from the CLI or update the stale command.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Dosu; GetDX 2025 study"
+      ]
+    },
+    {
+      "id": "CS-117",
+      "name": "Dead Documentation Link (Link Rot)",
+      "category": "documentation hygiene",
+      "description": "A doc link points to a target that no longer resolves.",
+      "detection": "Relative paths/anchors resolved offline (deterministic); external URLs via HTTP HEAD behind a flag.",
+      "determinism": "hybrid",
+      "aliases": [
+        "broken link",
+        "link rot"
+      ],
+      "fix_hint": "Repair or remove; point external rot to an archive.",
+      "severity_default": "warn",
+      "languages": "all (Markdown, reST, HTML)",
+      "sources": [
+        "md-dead-link-check; lychee"
+      ]
+    },
+    {
+      "id": "CS-118",
+      "name": "Stale Version/Changelog Reference",
+      "category": "doc-code drift",
+      "description": "A documented version/range disagrees with the manifest or tags.",
+      "detection": "Extract version strings from docs vs manifest version and latest tag; flag mismatch and missing changelog entry.",
+      "determinism": "mechanical",
+      "aliases": [
+        "version drift"
+      ],
+      "fix_hint": "Sync documented versions; add the missing changelog entry.",
+      "severity_default": "info",
+      "languages": "all (with a manifest)",
+      "sources": [
+        "Keep a Changelog; semantic-release"
+      ]
+    },
+    {
+      "id": "CS-119",
+      "name": "LAP: Get-Method That Does Not Return",
+      "category": "linguistic anti-pattern",
+      "description": "A get/is/has method does not return its value.",
+      "detection": "Name starts with get/is/has AND return is void or no reachable return.",
+      "determinism": "mechanical",
+      "aliases": [
+        "non-returning getter"
+      ],
+      "fix_hint": "Rename to reflect its action, or return the implied value.",
+      "severity_default": "warn",
+      "languages": "Java, C#, C++, TS, Python",
+      "sources": [
+        "Arnaoudova et al. (2013/2016); LAPD"
+      ]
+    },
+    {
+      "id": "CS-120",
+      "name": "LAP: Set-Method Returns",
+      "category": "linguistic anti-pattern",
+      "description": "A set method has a non-void return without documenting why.",
+      "detection": "Name starts with set AND return!=void AND no doc explaining it.",
+      "determinism": "mechanical",
+      "aliases": [
+        "returning setter"
+      ],
+      "fix_hint": "Return void or document the fluent-builder return.",
+      "severity_default": "info",
+      "languages": "Java, C#, C++, TS",
+      "sources": [
+        "Arnaoudova et al.; LAPD A3"
+      ]
+    },
+    {
+      "id": "CS-121",
+      "name": "LAP: Predicate Name Without Boolean",
+      "category": "linguistic anti-pattern",
+      "description": "An is/has/can/should name is not boolean-typed.",
+      "detection": "Name matches predicate prefix AND type/return not boolean-coercible.",
+      "determinism": "mechanical",
+      "aliases": [
+        "is/has without boolean"
+      ],
+      "fix_hint": "Return/declare boolean or drop the predicate prefix.",
+      "severity_default": "info",
+      "languages": "Java, C#, C++, TS, Python (annotated)",
+      "sources": [
+        "Arnaoudova et al.; LAPD A2/D2"
+      ]
+    },
+    {
+      "id": "CS-122",
+      "name": "LAP: Singular/Plural vs Cardinality Mismatch",
+      "category": "linguistic anti-pattern",
+      "description": "A name's number disagrees with single vs collection type.",
+      "detection": "Inflect the last name segment; plural name + non-collection type (or vice versa) using a deterministic pluralization table.",
+      "determinism": "mechanical",
+      "aliases": [
+        "collection naming mismatch"
+      ],
+      "fix_hint": "Rename to match cardinality or change the type.",
+      "severity_default": "info",
+      "languages": "Java, C#, C++, TS, Python (annotated)",
+      "sources": [
+        "Arnaoudova et al.; LAPD A4/B6/D1/E1"
+      ]
+    },
+    {
+      "id": "CS-123",
+      "name": "LAP: Name/Type/Comment Antonyms",
+      "category": "linguistic anti-pattern",
+      "description": "Name, type, or comment use antonymous terms (start vs stop).",
+      "detection": "Tokenize and apply a pinned antonym lexicon; flag antonym across name/type/comment of one entity.",
+      "determinism": "mechanical",
+      "aliases": [
+        "antonym contradiction"
+      ],
+      "fix_hint": "Reconcile the contradicting term.",
+      "severity_default": "info",
+      "languages": "Java, C#, C++, TS",
+      "sources": [
+        "Arnaoudova et al.; LAPD C1/C2/F1/F2"
+      ]
+    },
+    {
+      "id": "CS-124",
+      "name": "Comment Documents Not-Implemented Condition",
+      "category": "doc-code drift",
+      "description": "A comment promises behavior the body does not implement.",
+      "detection": "Mechanical for @throws/null contracts (generate boundary tests). Reader for free-prose validates/ensures claims: IMPLEMENTED/NOT.",
+      "determinism": "hybrid",
+      "aliases": [
+        "validation-not-performed doc"
+      ],
+      "fix_hint": "Implement the documented behavior or correct the comment.",
+      "severity_default": "warn",
+      "languages": "Java, C/C++, Python",
+      "sources": [
+        "Arnaoudova LAPD B1/B2; Tan et al. @tComment"
+      ]
+    },
+    {
+      "id": "CS-125",
+      "name": "Vague / Non-Local / Too-Much-Information Comment",
+      "category": "comment smell",
+      "description": "Uninformatively vague, distant-knowledge, or excessively verbose comment.",
+      "detection": "TMI when comment tokens >3x code tokens; non-local when referencing a distant symbol. Vagueness needs reader: SPECIFIC/VAGUE.",
+      "determinism": "hybrid",
+      "aliases": [
+        "verbose comment"
+      ],
+      "fix_hint": "Tighten to a specific local statement.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "EMSE 2024 taxonomy; arXiv:2504.18956"
+      ]
+    },
+    {
+      "id": "CS-126",
+      "name": "Attribution / Beautification Comment",
+      "category": "comment smell",
+      "description": "Authorship/credit or decorative banner comments.",
+      "detection": "Regex author|written by|@author|copyright in inline positions; banner lines of only punctuation.",
+      "determinism": "mechanical",
+      "aliases": [
+        "banner comment"
+      ],
+      "fix_hint": "Remove inline attribution and decorative banners.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "EMSE 2024 taxonomy"
+      ]
+    },
+    {
+      "id": "CS-127",
+      "name": "Irrelevant Comment",
+      "category": "comment smell",
+      "description": "A comment unrelated to the code it is attached to.",
+      "detection": "Zero token overlap pre-filter; reader confirmation: RELEVANT/IRRELEVANT.",
+      "determinism": "hybrid",
+      "aliases": [
+        "off-topic comment"
+      ],
+      "fix_hint": "Move to the code it describes or delete.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "EMSE 2024 taxonomy; arXiv:2504.18956"
+      ]
+    },
+    {
+      "id": "CS-128",
+      "name": "Vague Commit Subject",
+      "category": "commit-message",
+      "description": "The commit subject conveys no specific intent.",
+      "detection": "Match stoplist regex (fix|update|changes|misc|wip|stuff) OR subject token count <3 after stripping a CC prefix.",
+      "determinism": "mechanical",
+      "aliases": [
+        "fix bug / update message"
+      ],
+      "fix_hint": "Name the specific change and component.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "44%-poor-quality OSS study; cbea.ms"
+      ]
+    },
+    {
+      "id": "CS-129",
+      "name": "WIP / Temporary Commit on Shared History",
+      "category": "commit-message",
+      "description": "A scratch commit survived into merged history.",
+      "detection": "Subject matches wip|temp|checkpoint|fixup!|squash!|do not merge on a commit reachable from default branch.",
+      "determinism": "mechanical",
+      "aliases": [
+        "checkpoint commit"
+      ],
+      "fix_hint": "Squash WIP/fixup into a meaningful commit before merging.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Conventional Commits; cbea.ms"
+      ]
+    },
+    {
+      "id": "CS-130",
+      "name": "Missing Commit Body (No Rationale)",
+      "category": "commit-message",
+      "description": "A non-trivial change ships with only a subject line.",
+      "detection": "No body AND diff > 50 lines or > 3 files. Reader optional: does the subject explain WHY?",
+      "determinism": "hybrid",
+      "aliases": [
+        "context-free commit"
+      ],
+      "fix_hint": "Add a body explaining motivation and trade-offs.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "cbea.ms; 44%-poor-quality OSS study"
+      ]
+    },
+    {
+      "id": "CS-131",
+      "name": "Subject Too Long / 50-72 Violation",
+      "category": "commit-message",
+      "description": "Commit subject exceeds the readable limit or body unwrapped.",
+      "detection": "First line >72 (warn >50); non-URL body line >72.",
+      "determinism": "mechanical",
+      "aliases": [
+        "50/72 rule violation"
+      ],
+      "fix_hint": "Subject <=50 (hard 72); wrap body at 72.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Tim Pope tbaggery.com; cbea.ms"
+      ]
+    },
+    {
+      "id": "CS-132",
+      "name": "Non-Imperative Subject Mood",
+      "category": "commit-message",
+      "description": "Subject in past tense or narrative instead of imperative.",
+      "detection": "First word matches added|fixed|fixing|updating|removing etc. Allowlist project verbs.",
+      "determinism": "mechanical",
+      "aliases": [
+        "past-tense commit subject"
+      ],
+      "fix_hint": "Phrase as a command (Add, not Added/Adding).",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "cbea.ms; Tim Pope"
+      ]
+    },
+    {
+      "id": "CS-133",
+      "name": "Conventional Commits Violation",
+      "category": "commit-message",
+      "description": "Subject lacks a valid type(scope): prefix in a CC repo.",
+      "detection": "Conditional on adoption: subject must match feat|fix|docs|...(scope)?(!)?: .+.",
+      "determinism": "mechanical",
+      "aliases": [
+        "commitlint failure"
+      ],
+      "fix_hint": "Prefix with a valid type/scope; use ! for breaking.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Conventional Commits v1.0.0; commitlint"
+      ]
+    },
+    {
+      "id": "CS-134",
+      "name": "Tangled / Mixed-Concern Commit",
+      "category": "commit-atomicity",
+      "description": "A single commit bundles multiple unrelated concerns.",
+      "detection": "Touches >=3 distinct top-level dirs AND multiple categories. Reader lists independent concerns.",
+      "determinism": "hybrid",
+      "aliases": [
+        "multi-concern commit"
+      ],
+      "fix_hint": "Split into atomic commits, one concern each.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Herzig & Zeller (2013); arXiv:2011.06244"
+      ]
+    },
+    {
+      "id": "CS-135",
+      "name": "Secret Committed to History",
+      "category": "secrets",
+      "description": "A credential was committed and lives in recoverable history.",
+      "detection": "Token-format regex (AKIA, ghp_, BEGIN PRIVATE KEY, JWT) PLUS Shannon entropy >~4.0 with keyword proximity. Optional live-verify.",
+      "determinism": "hybrid",
+      "aliases": [
+        "leaked API key",
+        "exposed secret"
+      ],
+      "fix_hint": "Rotate immediately; purge from history; use a secret manager.",
+      "severity_default": "fail",
+      "languages": "all",
+      "sources": [
+        "Gitleaks; TruffleHog; Meli et al. (NDSS 2019)"
+      ]
+    },
+    {
+      "id": "CS-136",
+      "name": "Large Binary Blob Committed",
+      "category": "repo-hygiene",
+      "description": "A large binary committed directly into Git rather than LFS.",
+      "detection": "Binary blob >5MB warn / >50MB fail not tracked by LFS; known artifact extensions over threshold.",
+      "determinism": "mechanical",
+      "aliases": [
+        "repo bloat",
+        "non-LFS large file"
+      ],
+      "fix_hint": "Track with Git LFS or artifact storage; gitignore build output.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Git LFS docs; GitHub 50MB/100MB conventions"
+      ]
+    },
+    {
+      "id": "CS-137",
+      "name": "High Change-Coupling",
+      "category": "co-change",
+      "description": "Files repeatedly committed together, signaling a hidden dependency.",
+      "detection": "Mine association rules; flag pair with support>=5 AND confidence>=0.6-0.8, excluding same-dir and lockfiles.",
+      "determinism": "mechanical",
+      "aliases": [
+        "logical coupling"
+      ],
+      "fix_hint": "Extract the shared concern or co-locate the coupled code.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Gall et al. (1998); Zimmermann et al. (2004)"
+      ]
+    },
+    {
+      "id": "CS-138",
+      "name": "Force-Push / History Rewrite on Shared Branch",
+      "category": "history-integrity",
+      "description": "History rewritten and force-pushed to a shared branch.",
+      "detection": "Reflog/server hook: non-fast-forward ref update on a protected branch; previously-present SHAs unreachable.",
+      "determinism": "mechanical",
+      "aliases": [
+        "rewritten public history"
+      ],
+      "fix_hint": "Never force-push shared branches; use --force-with-lease on your own.",
+      "severity_default": "fail",
+      "languages": "all",
+      "sources": [
+        "GitLab Docs; Atlassian guidance"
+      ]
+    },
+    {
+      "id": "CS-139",
+      "name": "Commit Describes the Diff, Not the Intent",
+      "category": "commit-message",
+      "description": "The message narrates the diff without explaining the reason.",
+      "detection": "Reader: does the message add the WHY not obvious from the diff? Pre-filter: identifiers/numbers from the diff verbatim, no rationale keyword.",
+      "determinism": "bounded-reader",
+      "aliases": [
+        "restating-the-diff message"
+      ],
+      "fix_hint": "State the problem the change solves, not the lines it touches.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "cbea.ms; thoughtbot"
+      ]
+    },
+    {
+      "id": "CS-140",
+      "name": "Missing Issue / Ticket Reference",
+      "category": "traceability",
+      "description": "A non-trivial commit lacks a tracker reference.",
+      "detection": "Conditional on a linking convention: no match for #\\d+|[A-Z]{2,}-\\d+|closes #. Exclude merges, reverts, chores.",
+      "determinism": "mechanical",
+      "aliases": [
+        "broken traceability"
+      ],
+      "fix_hint": "Reference the issue in subject or footer; enforce with a hook.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Plandek; PR-SZZ link research"
+      ]
+    },
+    {
+      "id": "CS-141",
+      "name": "Leftover Debug / Scratch Code Shipped",
+      "category": "repo-hygiene",
+      "description": "Experimental scaffolding or debug prints that should have been removed.",
+      "detection": "Added hunks with console.log, print(, System.out.println, debugger;, binding.pry; new scratch files.",
+      "determinism": "mechanical",
+      "aliases": [
+        "debug print left in"
+      ],
+      "fix_hint": "Delete debug statements and scratch files before committing.",
+      "severity_default": "warn",
+      "languages": "language-aware",
+      "sources": [
+        "Fowler/Beck; VCS best-practice guides"
+      ]
+    },
+    {
+      "id": "CS-142",
+      "name": "Tracked Generated / Dependency Artifacts",
+      "category": "repo-hygiene",
+      "description": "Generated outputs or installed dependencies committed instead of gitignored.",
+      "detection": "Tracked paths matching node_modules/, __pycache__, dist/, build/, *.class, .DS_Store, especially if a lockfile makes them reproducible.",
+      "determinism": "mechanical",
+      "aliases": [
+        "node_modules in repo"
+      ],
+      "fix_hint": "Add to .gitignore; git rm --cached; commit only the lockfile.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "github/gitignore templates"
+      ]
+    },
+    {
+      "id": "CS-143",
+      "name": "Merge Commit on a Linear-History Policy",
+      "category": "history-integrity",
+      "description": "A merge commit appears in a linear-history repo.",
+      "detection": "Conditional on a linear signal: flag commits with >=2 parents on the protected branch.",
+      "determinism": "mechanical",
+      "aliases": [
+        "noisy merge bubble"
+      ],
+      "fix_hint": "Use rebase or squash-merge; enable require-linear-history.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "GitLab Docs; GitHub Require linear history"
+      ]
+    },
+    {
+      "id": "CS-144",
+      "name": "Author/Identity Hygiene Drift",
+      "category": "history-integrity",
+      "description": "Commits carry placeholder/inconsistent identities or lack required signatures.",
+      "detection": "Author email matches localhost|example.com|root@|noreply; on a sign-required branch, unsigned commits; identity not in mailmap.",
+      "determinism": "mechanical",
+      "aliases": [
+        "wrong commit author"
+      ],
+      "fix_hint": "Set correct user.name/email; normalize with .mailmap; require signing.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "git config conventions; signed-commit guidance"
+      ]
+    },
+    {
+      "id": "CS-145",
+      "name": "Assertion Roulette",
+      "category": "test-comprehension",
+      "description": "Several assertions with no explanatory messages.",
+      "detection": ">=2 assert* invocations omitting the message parameter.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Guess the Assertion"
+      ],
+      "fix_hint": "Add failure messages or split into single-assertion tests.",
+      "severity_default": "warn",
+      "languages": "Java, Kotlin, Python, JS, C#, Ruby, Go",
+      "sources": [
+        "van Deursen et al. (XP2001); tsDetect"
+      ]
+    },
+    {
+      "id": "CS-146",
+      "name": "Eager Test",
+      "category": "test-scope",
+      "description": "A single test exercises several methods/behaviors.",
+      "detection": ">1 distinct production method invoked in one test. Reader confirms multiple behaviors vs one builder chain.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Multiple Method Test"
+      ],
+      "fix_hint": "Split into one test per behavior.",
+      "severity_default": "warn",
+      "languages": "Java, Kotlin, Python, JS/TS, C#, Ruby",
+      "sources": [
+        "van Deursen et al.; tsDetect"
+      ]
+    },
+    {
+      "id": "CS-147",
+      "name": "Mystery Guest",
+      "category": "test-isolation",
+      "description": "A test relies on external resources not visible in its body.",
+      "detection": "References File/Path/Connection/Socket/getenv/absolute paths without constructing them inline.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Hidden Fixture"
+      ],
+      "fix_hint": "Inline the fixture; in-memory fakes/temp dirs.",
+      "severity_default": "warn",
+      "languages": "Java, Kotlin, Python, JS/TS, C#, Ruby, Go",
+      "sources": [
+        "van Deursen et al.; Meszaros; tsDetect"
+      ]
+    },
+    {
+      "id": "CS-148",
+      "name": "Resource Optimism",
+      "category": "test-isolation",
+      "description": "A test assumes an external resource exists in a known state.",
+      "detection": "Uses a File/resource without an existence/precondition guard or in-test creation.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Optimistic Resource Assumption"
+      ],
+      "fix_hint": "Create the resource in setup or assert preconditions.",
+      "severity_default": "warn",
+      "languages": "Java, Kotlin, Python, JS/TS, C#, Ruby, Go",
+      "sources": [
+        "Meszaros; van Deursen et al.; tsDetect"
+      ]
+    },
+    {
+      "id": "CS-149",
+      "name": "Conditional Test Logic",
+      "category": "test-control-flow",
+      "description": "A test contains control-flow driving assertions.",
+      "detection": "Any if/switch/for/while/ternary-guarded-assert/catch-pass inside a test, excluding parameterization and assertThrows lambdas.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Test with Branches"
+      ],
+      "fix_hint": "Use parameterized tests, matchers; straight-line Arrange-Act-Assert.",
+      "severity_default": "warn",
+      "languages": "Java, Kotlin, Python, JS/TS, C#, Ruby, Go",
+      "sources": [
+        "Meszaros ch.15; tsDetect"
+      ]
+    },
+    {
+      "id": "CS-150",
+      "name": "Sleepy Test",
+      "category": "test-timing",
+      "description": "A test pauses with a fixed-duration sleep to wait for async work.",
+      "detection": "Fixed-delay calls in test code: Thread.sleep, time.sleep, await delay(n), Go time.Sleep.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Hard-Coded Sleep"
+      ],
+      "fix_hint": "Replace with deterministic synchronization: polling, fake clocks.",
+      "severity_default": "warn",
+      "languages": "Java, Kotlin, Python, JS/TS, C#, Ruby, Go",
+      "sources": [
+        "testsmells.org / tsDetect; Meszaros"
+      ]
+    },
+    {
+      "id": "CS-151",
+      "name": "Flaky / Erratic Test",
+      "category": "test-reliability",
+      "description": "A test gives different results across runs depending on time/order/state.",
+      "detection": "Proxies: now()/Date(), unseeded random, HashMap iteration order, shared mutable fixture. Empirical: differing results across shuffled runs.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Nondeterministic Test",
+        "Order-Dependent Test"
+      ],
+      "fix_hint": "Seed randomness, inject a fixed clock, isolate fixtures.",
+      "severity_default": "fail",
+      "languages": "Java, Kotlin, Python, JS/TS, C#, Ruby, Go",
+      "sources": [
+        "Meszaros; Palomba et al. Test Smells and Flaky Tests"
+      ]
+    },
+    {
+      "id": "CS-152",
+      "name": "Data Race / Unsynchronized Shared Mutable State",
+      "category": "concurrency",
+      "description": "Two or more threads access shared mutable state concurrently with at least one write and no synchronization, producing nondeterministic corruption.",
+      "detection": "Static: shared field (static/instance reachable from multiple threads) written without lock/atomic/volatile and read/written outside synchronization; non-thread-safe collection (HashMap/ArrayList/dict) shared across thread/goroutine boundaries; Go: -race-style escape of a variable to >1 goroutine without a channel/mutex. Reader confirms cross-thread reachability where the analysis is conservative.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Race Condition",
+        "Shared Mutable State Without Synchronization",
+        "Thread-Unsafe Field"
+      ],
+      "fix_hint": "Guard shared state with a lock/atomic, make it immutable, confine it to one thread, or pass ownership via channels.",
+      "severity_default": "fail",
+      "languages": "Java, Kotlin, C#, C/C++, Go, Rust (unsafe), Python (C-ext/threads)",
+      "sources": [
+        "Go race detector; Java Concurrency in Practice (Goetz 2006); ThreadSanitizer; SpotBugs MT_CORRECTNESS"
+      ]
+    },
+    {
+      "id": "CS-153",
+      "name": "Check-Then-Act / Non-Atomic Compound Operation",
+      "category": "concurrency",
+      "description": "A check and a dependent action on shared state are performed as separate steps, so another thread can change the state in between (lost update, TOCTOU).",
+      "detection": "AST: read of a shared field in a condition followed by a write to the same field outside one atomic/locked region (if (map.containsKey(k)) map.put(k,...); if (instance==null) instance=new...); non-atomic ++/+= on a shared counter; lazy-init without double-checked-locking discipline.",
+      "determinism": "mechanical",
+      "aliases": [
+        "TOCTOU",
+        "Lost Update",
+        "Non-Atomic Read-Modify-Write"
+      ],
+      "fix_hint": "Use an atomic compound operation (putIfAbsent, compareAndSet), hold one lock across check and act, or use a concurrent data structure.",
+      "severity_default": "warn",
+      "languages": "Java, Kotlin, C#, C/C++, Go, Python",
+      "sources": [
+        "Java Concurrency in Practice (Goetz 2006); SonarQube S2886; CWE-367"
+      ]
+    },
+    {
+      "id": "CS-154",
+      "name": "Inconsistent Lock Ordering (Deadlock Risk)",
+      "category": "concurrency",
+      "description": "Two or more locks are acquired in different orders on different paths, risking deadlock.",
+      "detection": "Build a lock-acquisition order graph from nested synchronized/lock-acquire sites; flag any cycle (locks A->B on one path and B->A on another). Also flag a blocking call (I/O, join, get) made while holding a lock.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Lock-Order Inversion",
+        "Nested Lock Deadlock"
+      ],
+      "fix_hint": "Impose a global lock-acquisition order; reduce lock scope; avoid blocking while holding a lock; prefer lock-free structures.",
+      "severity_default": "warn",
+      "languages": "Java, Kotlin, C#, C/C++, Rust, Go",
+      "sources": [
+        "Java Concurrency in Practice (Goetz 2006); Helgrind/ThreadSanitizer lock-order; CWE-833"
+      ]
+    },
+    {
+      "id": "CS-155",
+      "name": "Busy-Wait / Spin Loop",
+      "category": "concurrency",
+      "description": "A loop repeatedly polls a condition without yielding or blocking, burning CPU instead of waiting on a proper synchronization primitive.",
+      "detection": "Loop whose body only re-reads a shared flag/condition with no blocking call (no wait/await/sleep-with-backoff/condition-variable), or a while(!ready){} tight loop; spin without a memory-fenced/volatile read.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Spin-Wait",
+        "Polling Loop",
+        "Wait-and-Poll"
+      ],
+      "fix_hint": "Block on a condition variable, future, channel, or event; if spinning is required use a bounded backoff and a proper memory barrier.",
+      "severity_default": "warn",
+      "languages": "Java, Kotlin, C#, C/C++, Go, Python",
+      "sources": [
+        "Java Concurrency in Practice (Goetz 2006); CERT CON; performance literature"
+      ]
+    },
+    {
+      "id": "CS-156",
+      "name": "Fire-and-Forget / Unhandled Async",
+      "category": "concurrency",
+      "description": "An asynchronous task (Promise, Future, goroutine, Task) is launched but never awaited or its result/error never observed, so failures vanish silently.",
+      "detection": "AST: a Promise-returning call whose result is discarded (no await/.then/.catch/return) at a statement position (ESLint no-floating-promises); async function called without await; bare goroutine launching work whose error channel is never read; Task/Future created and dropped. C#: async method not awaited (CS4014).",
+      "determinism": "mechanical",
+      "aliases": [
+        "Floating Promise",
+        "Unawaited Task",
+        "Orphaned Goroutine",
+        "Fire-and-Forget"
+      ],
+      "fix_hint": "Await the result, attach an error handler, or explicitly mark intentional fire-and-forget with a documented sink that logs failures.",
+      "severity_default": "warn",
+      "languages": "JS/TS, C#, Python (asyncio), Go, Java (CompletableFuture)",
+      "sources": [
+        "ESLint no-floating-promises; C# CS4014; typescript-eslint; Go vet"
+      ]
+    },
+    {
+      "id": "CS-157",
+      "name": "Unreleased / Leaked Resource",
+      "category": "resource-management",
+      "description": "A resource that requires explicit release (file, socket, DB connection, lock, stream, OS handle) is acquired on a path that can return or throw before releasing it.",
+      "detection": "AST/dataflow: resource-acquiring call (open/connect/acquire/new FileInputStream/lock()) with at least one reachable exit (return/throw/break) before the matching close/release, and not wrapped in try-with-resources/using/with/defer/RAII. ruff/flake8 SIM115; SpotBugs OBL/OS_OPEN_STREAM; Go missing defer Close.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Resource Leak",
+        "Unclosed Stream",
+        "Connection Leak",
+        "Missing defer Close"
+      ],
+      "fix_hint": "Wrap acquisition in try-with-resources / using / with / defer Close() / RAII so release runs on every path.",
+      "severity_default": "warn",
+      "languages": "Java, C#, Python, Go, C/C++, Rust (non-RAII FFI)",
+      "sources": [
+        "SpotBugs OBL_UNSATISFIED_OBLIGATION; ruff SIM115; CWE-404/772; golangci-lint"
+      ]
+    },
+    {
+      "id": "CS-158",
+      "name": "SQL / Command Injection via String Concatenation",
+      "category": "security-adjacent maintainability",
+      "description": "Untrusted input is concatenated or interpolated directly into a SQL query, shell command, or other interpreter string instead of using parameterized APIs.",
+      "detection": "AST/taint: a query/exec sink (execute, query, Statement, os.system, subprocess with shell=True, eval of a built string, child_process.exec) whose argument is built by concatenation/interpolation of a non-constant that traces to a parameter/request/env. Lightweight: f-string/+ assembling SQL keywords with a variable. Bandit B608/B602; ESLint security/detect-child-process.",
+      "determinism": "hybrid",
+      "aliases": [
+        "SQLi",
+        "Command Injection",
+        "Unsafe Interpolation into Interpreter"
+      ],
+      "fix_hint": "Use parameterized queries / prepared statements; pass argv arrays (no shell); never interpolate untrusted input into an interpreter string.",
+      "severity_default": "fail",
+      "languages": "all (SQL, shell, OS exec, template engines)",
+      "sources": [
+        "OWASP Top 10 A03 Injection; Bandit B608/B602; CodeQL js/python sql-injection; CWE-89/78"
+      ]
+    },
+    {
+      "id": "CS-159",
+      "name": "Unsafe Dynamic Evaluation",
+      "category": "security-adjacent maintainability",
+      "description": "Code passes runtime-constructed or externally-influenced strings to a dynamic evaluator (eval, exec, Function, pickle/yaml.load, deserialization), enabling code execution and defeating static analysis.",
+      "detection": "AST: calls to eval/exec/compile, new Function, setTimeout/setInterval with a string, pickle.loads/yaml.load(unsafe)/Marshal.load/ObjectInputStream.readObject on untrusted input. Bandit B301/B307; ESLint no-eval; flag any non-literal argument.",
+      "determinism": "mechanical",
+      "aliases": [
+        "eval injection",
+        "Insecure Deserialization",
+        "Arbitrary Code Execution Surface"
+      ],
+      "fix_hint": "Replace eval with explicit dispatch/parsing; use safe loaders (yaml.safe_load, JSON); never deserialize untrusted data with object-graph deserializers.",
+      "severity_default": "fail",
+      "languages": "Python, JS/TS, Ruby, Java, PHP",
+      "sources": [
+        "Bandit B301/B307; ESLint no-eval; OWASP Insecure Deserialization; CWE-502/95"
+      ]
+    },
+    {
+      "id": "CS-160",
+      "name": "Missing Input Validation at Trust Boundary",
+      "category": "security-adjacent maintainability",
+      "description": "External input (request params, file contents, env, CLI args) is consumed and used in sensitive operations (file paths, queries, sizes, redirects) without validation, bounds, or allowlisting at the boundary.",
+      "detection": "Mechanical proxies: request/argv/env value flows into a path join, file open, redirect, array index, or allocation size with no intervening validation/sanitization/allowlist call; path built from input without normalization (path traversal: ../ reachable). Reader confirms the absence of an equivalent boundary check.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Unvalidated Input",
+        "Path Traversal Surface",
+        "Open Redirect Surface",
+        "Trust-Boundary Gap"
+      ],
+      "fix_hint": "Validate, normalize, and allowlist all external input at the boundary; canonicalize and confine paths; bound sizes and indices.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "OWASP Input Validation Cheat Sheet; CWE-20/22/601; CodeQL path-injection"
+      ]
+    },
+    {
+      "id": "CS-161",
+      "name": "Weak / Hardcoded Cryptography",
+      "category": "security-adjacent maintainability",
+      "description": "Code uses a broken or unsuitable cryptographic primitive (MD5/SHA-1 for security, DES/ECB, small keys), a hardcoded key/IV/salt, or an insecure random source for security-sensitive values.",
+      "detection": "AST/regex: calls to MD5/SHA1/DES/RC4/ECB-mode APIs in a security context; hardcoded literal keys/IVs/salts/passwords passed to crypto APIs; non-CSPRNG (Math.random, random.random, rand()) used to generate tokens/keys/passwords/nonces. Bandit B303/B324/B311; SpotBugs WEAK_*; ESLint detect-pseudoRandomBytes.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Broken Crypto",
+        "Insecure Random for Secrets",
+        "Hardcoded Key/IV/Salt"
+      ],
+      "fix_hint": "Use vetted algorithms (SHA-256+/AES-GCM/Argon2), a CSPRNG for secrets, and load keys from a secret manager, never hardcoded.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Bandit B303/B311/B324; OWASP Cryptographic Failures A02; CWE-327/328/330/798"
+      ]
+    },
+    {
+      "id": "CS-162",
+      "name": "Exception as Control Flow",
+      "category": "error-handling",
+      "description": "Exceptions are thrown and caught to implement ordinary expected control flow (loop termination, branch selection, presence checks) rather than to signal genuine errors.",
+      "detection": "AST: a try/except wrapping a normal lookup/parse whose except branch returns a normal value with no error propagation, used in a hot/expected path; catch of a broad type immediately followed by continue/break/normal-flow; throwing to exit nested loops. Reader confirms the condition is expected, not exceptional.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Exceptions for Flow Control",
+        "Catch-to-Branch"
+      ],
+      "fix_hint": "Use explicit conditionals, Optional/null-object, or sentinel-returning APIs; reserve exceptions for exceptional conditions.",
+      "severity_default": "info",
+      "languages": "Java, C#, Python, JS/TS, Ruby",
+      "sources": [
+        "Effective Java (Bloch) Item 69; CWE-705; SonarQube S1166"
+      ]
+    },
+    {
+      "id": "CS-163",
+      "name": "Log-and-Rethrow / Double Handling",
+      "category": "error-handling",
+      "description": "An exception is both logged and rethrown (or logged at multiple layers), producing duplicate noise and obscuring the true handling point.",
+      "detection": "AST: a catch block that calls a logger AND then throws/re-raises the same exception; the same exception logged in nested catches along one call path. SpotBugs/SonarQube S2139.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Log and Throw",
+        "Duplicate Exception Handling"
+      ],
+      "fix_hint": "Either handle (log and recover) or propagate with context, not both; log once at the boundary that decides the response.",
+      "severity_default": "info",
+      "languages": "Java, C#, Kotlin, Python, JS/TS",
+      "sources": [
+        "SonarQube S2139; CERT ERR; common error-handling guides"
+      ]
+    },
+    {
+      "id": "CS-164",
+      "name": "Swallowed Error Return / Unchecked Error",
+      "category": "error-handling",
+      "description": "A function returns an error/status that the caller ignores (Go err discarded, C return code unchecked, Promise rejection unhandled, boolean result dropped), letting failures pass silently.",
+      "detection": "Go: assignment to _ for an error return, or an error-returning call in expression-statement position (errcheck). C: ignored return of a fallible call. JS: unhandled rejection. Boolean/status-returning API whose result is discarded.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Ignored Error",
+        "Discarded err",
+        "Unchecked Return Value"
+      ],
+      "fix_hint": "Check and handle or propagate every error/status; never assign errors to the blank identifier without justification.",
+      "severity_default": "warn",
+      "languages": "Go, C, C++, JS/TS, Rust (#[must_use])",
+      "sources": [
+        "errcheck; go vet; CWE-252; Rust must_use lint"
+      ]
+    },
+    {
+      "id": "CS-165",
+      "name": "Overly Broad Try Scope",
+      "category": "error-handling",
+      "description": "A try/catch wraps a large block so the handler cannot tell which statement failed and may mask unrelated errors.",
+      "detection": "try block spanning > N statements (e.g. >10) or containing multiple distinct fallible operations with a single broad catch; the catch references no specifics of which call failed.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Wide Try Block",
+        "Catch-All Scope"
+      ],
+      "fix_hint": "Narrow the try to the single fallible statement; catch the specific exception type per operation.",
+      "severity_default": "info",
+      "languages": "Java, C#, Python, JS/TS, Kotlin",
+      "sources": [
+        "Clean Code (Martin); SonarQube exception-scope guidance; CWE-396"
+      ]
+    },
+    {
+      "id": "CS-166",
+      "name": "Returning Null Instead of Empty/Optional",
+      "category": "error-handling",
+      "description": "A method returns null to indicate absence of a collection or value, forcing callers into null-checks and inviting NullPointerExceptions.",
+      "detection": "AST: a method whose declared return is a collection/array/string returns a literal null on some path; a value-returning method returns null where an Optional/Maybe/empty is idiomatic. Reader distinguishes meaningful-null from absence.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Null Return",
+        "Null Collection"
+      ],
+      "fix_hint": "Return an empty collection, Optional/Maybe, or a Null Object; reserve null only where genuinely meaningful and documented.",
+      "severity_default": "info",
+      "languages": "Java, C#, Kotlin, TS, Go (nil slices ok)",
+      "sources": [
+        "Effective Java (Bloch) Items 54/55; Fowler Introduce Special Case; CWE-476"
+      ]
+    },
+    {
+      "id": "CS-167",
+      "name": "N+1 Query",
+      "category": "performance",
+      "description": "Code issues one query to fetch a list and then one additional query per element instead of batching, multiplying round-trips.",
+      "detection": "AST: a database/HTTP call inside a loop whose iterable came from a prior query/fetch; ORM lazy-relation access inside a loop without eager-load/join/prefetch. Heuristic: query/fetch sink within a for/foreach over a collection of records.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Select-in-Loop",
+        "Lazy-Load in Loop",
+        "Per-Row Query"
+      ],
+      "fix_hint": "Batch with a single query (IN / join / eager-load / prefetch / dataloader); fetch related data in bulk before the loop.",
+      "severity_default": "warn",
+      "languages": "all with DB/ORM/remote calls (Rails, Django, Hibernate, Sequelize, JPA)",
+      "sources": [
+        "Rails Bullet gem; Hibernate N+1 docs; ORM performance literature"
+      ]
+    },
+    {
+      "id": "CS-168",
+      "name": "Loop-Invariant Computation / Repeated Work in Loop",
+      "category": "performance",
+      "description": "An expensive computation, allocation, or lookup whose result does not change across iterations is recomputed inside the loop instead of hoisted out.",
+      "detection": "AST: inside a loop, a call/expression with no dependence on the loop variable that is pure or idempotent (len()/size() of an unchanged collection in the condition, regex compile, config/property read, repeated DB/IO of the same key, object allocation). Flag invariant pure subexpressions evaluated each iteration.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Invariant Hoisting Opportunity",
+        "Recompute in Loop",
+        "Regex Compile in Loop"
+      ],
+      "fix_hint": "Hoist the invariant computation/allocation/compile out of the loop; cache the result.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Compiler optimization literature (LICM); PMD/SonarQube performance rules"
+      ]
+    },
+    {
+      "id": "CS-169",
+      "name": "String Concatenation in Loop",
+      "category": "performance",
+      "description": "Strings are built by repeated concatenation inside a loop, causing quadratic copying instead of using a builder/buffer/join.",
+      "detection": "AST: += or + assignment to a string accumulator inside a loop body (s = s + x / s += x); Java string + in a loop. PMD InefficientStringBuffering/AppendCharacterWithChar; SonarQube S1643.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Quadratic String Build",
+        "Accumulating + in Loop"
+      ],
+      "fix_hint": "Use a StringBuilder/StringBuffer/bytes.Buffer/array-join; accumulate parts and join once.",
+      "severity_default": "info",
+      "languages": "Java, C#, Python, JS, Go",
+      "sources": [
+        "PMD InefficientStringBuffering; SonarQube S1643; Effective Java Item 63"
+      ]
+    },
+    {
+      "id": "CS-170",
+      "name": "Inefficient Membership / Nested-Loop Lookup",
+      "category": "performance",
+      "description": "Repeated membership tests against a list, or a nested loop pairing two collections, yield O(n^2) where a set/map/index gives O(n).",
+      "detection": "AST: in / contains / indexOf against a list/array inside a loop over another collection; nested loops over two collections joining by a key with no hashing. Flag list-membership in a loop and double-nested loops correlating elements.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Quadratic Lookup",
+        "List contains() in Loop",
+        "Nested-Loop Join"
+      ],
+      "fix_hint": "Build a set/dict/index once, then look up in O(1); replace the nested loop with a hash join.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Algorithmic-complexity guides; SonarQube/PMD performance rules"
+      ]
+    },
+    {
+      "id": "CS-171",
+      "name": "Unbounded Resource Acquisition",
+      "category": "performance",
+      "description": "Code reads, allocates, or fetches without a bound (entire file/result-set into memory, unpaginated remote fetch, no LIMIT, unbounded queue/cache), risking memory blowups and slow responses on large inputs.",
+      "detection": "AST: readAll/read()/.read() of a whole stream into memory, ORM/HTTP fetch with no limit/pagination, SELECT without LIMIT in dynamic queries, unbounded collection growth (cache/queue with no eviction/cap). Reader confirms inputs can be large in production.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Read-All-Into-Memory",
+        "Missing Pagination",
+        "Unbounded Cache/Queue",
+        "No LIMIT"
+      ],
+      "fix_hint": "Stream/iterate in chunks; paginate remote and DB queries; bound caches/queues with a size or eviction policy.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "12-factor / scalability guides; CWE-400 Uncontrolled Resource Consumption"
+      ]
+    },
+    {
+      "id": "CS-172",
+      "name": "Mutable Default Argument",
+      "category": "correctness",
+      "description": "A function uses a mutable object (list/dict/set) as a default parameter value, which is created once and shared across all calls, accumulating state between invocations.",
+      "detection": "AST: a default parameter value that is a mutable literal/constructor ([], {}, set(), dict(), or a mutable object). pylint W0102; ruff B006.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Shared Default List/Dict",
+        "dangerous-default-value"
+      ],
+      "fix_hint": "Default to None (or an immutable sentinel) and create the mutable object inside the body.",
+      "severity_default": "warn",
+      "languages": "Python (canonical); JS object defaults with care",
+      "sources": [
+        "pylint W0102 dangerous-default-value; ruff B006; Python docs"
+      ]
+    },
+    {
+      "id": "CS-173",
+      "name": "Floating-Point Equality Comparison",
+      "category": "correctness",
+      "description": "Two floating-point values are compared with == / != , which is unreliable due to representation and rounding error.",
+      "detection": "AST: == or != where at least one operand is a float/double literal, variable, or float-returning expression; equality on a computed float. PMD/SonarQube S1244; pylint and clippy float-cmp lints.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Exact Float Compare",
+        "== on doubles"
+      ],
+      "fix_hint": "Compare with a tolerance (abs(a-b) < epsilon) or use a decimal/rational type for exact arithmetic.",
+      "severity_default": "info",
+      "languages": "Java, C#, C/C++, Python, JS, Go, Rust",
+      "sources": [
+        "SonarQube S1244; clippy float_cmp; IEEE-754 guidance"
+      ]
+    },
+    {
+      "id": "CS-174",
+      "name": "Self-Assignment / Suspicious Same-Operand Operation",
+      "category": "correctness",
+      "description": "An operation has identical operands in a way that indicates a bug: self-assignment (x = x), a comparison always true/false (x == x, x != x), or a self-divide/subtract that is almost certainly a typo for another variable.",
+      "detection": "AST: assignment where LHS and RHS are the same lvalue; binary comparison/logical op with structurally identical operands (a && a, a == a, a | a); copy-paste-with-wrong-variable signature where an adjacent member differs. SpotBugs SA_*; clippy eq_op.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Self-Assignment",
+        "Identical Operands",
+        "Copy-Paste Variable Bug"
+      ],
+      "fix_hint": "Replace the duplicated operand with the intended variable, or remove the no-op.",
+      "severity_default": "warn",
+      "languages": "Java, C#, C/C++, JS/TS, Go, Rust, Python",
+      "sources": [
+        "SpotBugs SA_SELF_ASSIGNMENT/SA_*; clippy eq_op; CWE-480/481/561"
+      ]
+    },
+    {
+      "id": "CS-175",
+      "name": "Off-By-One / Boundary Error",
+      "category": "correctness",
+      "description": "A loop bound, index, or slice is off by one (< vs <=, length vs length-1, inclusive vs exclusive), causing missed elements or out-of-bounds access.",
+      "detection": "Mechanical proxies: index expressions of the form arr[i+1] inside a loop ranging to length without an adjusted bound; <= length / < length-1 patterns; slice end equal to length+1. Hard cases need a reader to confirm intent against the boundary.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Boundary Condition Error",
+        "Fencepost Error"
+      ],
+      "fix_hint": "Re-derive the bound from the boundary intent; prefer half-open ranges and iterator/foreach over manual indexing.",
+      "severity_default": "info",
+      "languages": "all imperative languages",
+      "sources": [
+        "CWE-193 Off-by-one Error; defect-pattern literature"
+      ]
+    },
+    {
+      "id": "CS-176",
+      "name": "Reinventing the Standard Library",
+      "category": "maintainability",
+      "description": "Hand-rolled code reimplements functionality already provided by the language standard library or a ubiquitous, already-imported utility (clamp, max/min, dedupe, group-by, date parsing, deep-clone), adding bugs and maintenance cost. Common in LLM output.",
+      "detection": "Pattern-match well-known reimplementation shapes against a registry (manual min/max loop, manual contains/indexOf, hand-written deep-copy, hand-rolled UUID/slugify/title-case, manual JSON building). Reader confirms a stdlib/available equivalent exists.",
+      "determinism": "hybrid",
+      "aliases": [
+        "Not-Invented-Here for Builtins",
+        "Hand-Rolled stdlib"
+      ],
+      "fix_hint": "Replace the hand-rolled version with the standard-library or established-utility function.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Effective Java Item 59 (know and use the libraries); refactoring practice"
+      ]
+    },
+    {
+      "id": "CS-177",
+      "name": "Inconsistent Naming Convention",
+      "category": "naming",
+      "description": "Identifiers in the same scope/module mix casing or naming styles (camelCase next to snake_case, get_X next to fetchY, abbreviation used inconsistently), so the codebase reads as stitched from different sources.",
+      "detection": "AST: collect identifiers per declared kind (function/var/const/class) and detect >1 casing convention within a file/module beyond the language norm; detect the same concept named two ways (cfg vs config, usr vs user) by normalized-stem clustering. Distinct from CS-100 which is diff-scoped.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Mixed Naming Styles",
+        "Casing Drift",
+        "Synonym Identifiers"
+      ],
+      "fix_hint": "Adopt and enforce one naming convention per identifier kind; pick one term per concept and rename the variants.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Clean Code (Martin); PEP 8; language style guides; linters (eslint naming-convention, pylint C0103)"
+      ]
+    },
+    {
+      "id": "CS-178",
+      "name": "Boolean Flag Parameter",
+      "category": "code-style / API design",
+      "description": "A function takes a boolean (or enum-as-flag) parameter that selects between two behaviors, so call sites read as opaque true/false and the function does two things.",
+      "detection": "AST: a function whose signature has a boolean parameter that is branched on in the body to choose distinct behaviors; call sites passing a bare boolean literal (foo(x, true)). Flag boolean params that gate control flow rather than carry data.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Flag Argument",
+        "Control-Coupling Parameter",
+        "Two-in-One Function"
+      ],
+      "fix_hint": "Split into two clearly-named functions (Remove Flag Argument), or pass a named enum/options object so call sites are self-describing.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Fowler Remove Flag Argument (2018); Clean Code (Martin); Martin control coupling"
+      ]
+    },
+    {
+      "id": "CS-179",
+      "name": "Inconsistent Abstraction Level in a Function",
+      "category": "comprehensibility / design",
+      "description": "A single function mixes high-level orchestration with low-level detail (a business step beside raw byte-twiddling or string parsing), violating the single-level-of-abstraction guideline and obscuring intent.",
+      "detection": "Reader-judged primarily: identify >1 distinct abstraction level in adjacent statements (named domain calls interleaved with primitive index/parsing/bit operations). Mechanical adjunct: a function calling well-named helpers AND containing dense primitive expressions in the same body.",
+      "determinism": "bounded-reader",
+      "aliases": [
+        "Mixed Levels of Abstraction",
+        "Single-Level-of-Abstraction Violation"
+      ],
+      "fix_hint": "Extract the low-level detail into named helpers so each function reads at one abstraction level.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Clean Code (Martin) Single Level of Abstraction; Fowler Extract Function"
+      ]
+    },
+    {
+      "id": "CS-180",
+      "name": "Hardcoded Environment / Configuration Value",
+      "category": "maintainability / configuration",
+      "description": "Environment-specific values (hostnames, ports, file paths, feature flags, credentials-by-reference, region/account IDs, timeouts) are hardcoded in source instead of being read from configuration or environment, breaking portability across environments.",
+      "detection": "AST/regex: literal hosts/IPs/URLs (localhost, internal hostnames, http(s)://...), absolute filesystem paths, port numbers, cloud account/region IDs, and tunable timeouts embedded in application logic outside designated config files. Overlaps CS-068 but scoped to environment portability.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Environment-Specific Literal",
+        "Config in Code",
+        "Hardcoded Host/Port/Path"
+      ],
+      "fix_hint": "Externalize to environment variables or a config layer; inject per-environment values; keep code environment-agnostic.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "12-Factor App (config); arXiv:2510.03029; OWASP config guidance"
+      ]
+    },
+    {
+      "id": "CS-181",
+      "name": "Layering / Architectural Dependency Violation",
+      "category": "architecture",
+      "description": "A module reaches across an intended architectural boundary the wrong way (UI/controller calls the database directly, a domain layer imports a web framework, a lower layer imports an upper layer), eroding the layered architecture.",
+      "detection": "Define layer/package rules (allowed dependency directions) and check the import/call graph against them; flag edges violating the declared direction. Without declared rules, heuristically flag presentation-layer files importing DB drivers or domain files importing web/IO frameworks. ArchUnit / import-linter / dependency-cruiser.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Architecture Erosion",
+        "Cross-Layer Call",
+        "Boundary Violation"
+      ],
+      "fix_hint": "Route the dependency through the intended layer/interface; invert the dependency; enforce the rule in CI with an architecture-fitness test.",
+      "severity_default": "warn",
+      "languages": "all with module/package structure",
+      "sources": [
+        "Clean Architecture (Martin 2017); ArchUnit; import-linter; dependency-cruiser; Suryanarayana Ch.5"
+      ]
+    },
+    {
+      "id": "CS-182",
+      "name": "Skipped / Disabled Test Left in Suite",
+      "category": "testing",
+      "description": "Tests are committed in a permanently disabled state (@Ignore/@Disabled, it.skip, xit, t.Skip, @pytest.mark.skip without a condition, commented-out test body), so coverage is silently lost while the suite still appears green.",
+      "detection": "AST/regex: skip/ignore/disable annotations and helpers (@Disabled, @Ignore, it.skip/xit/describe.skip, test.skip, t.Skip, @pytest.mark.skip/@unittest.skip, [Ignore]) on committed tests, especially without a documented reason or tracking reference; commented-out test functions.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Ignored Test",
+        "skip Without Reason",
+        "Permanently Disabled Test"
+      ],
+      "fix_hint": "Fix and re-enable the test, or delete it and track the gap in an issue; never let unconditional skips accumulate silently.",
+      "severity_default": "warn",
+      "languages": "Java/JUnit, JS/TS (Jest/Mocha), Python (pytest/unittest), Go, C#",
+      "sources": [
+        "testsmells.org; JUnit/pytest docs; test-hygiene guidance"
+      ]
+    },
+    {
+      "id": "CS-183",
+      "name": "Test Without Assertions",
+      "category": "testing",
+      "description": "A test executes code but never asserts anything, so it only checks that no exception is thrown and gives false confidence (passes as long as nothing crashes).",
+      "detection": "AST: a test method/function containing zero assertion calls (no assert*, expect(), require/assert, should, t.Error/t.Fatal, verify-mock) and no documented exception-expectation. Exclude tests whose entire purpose is assertThrows/expect-no-throw with an explicit expectation construct.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Assertionless Test",
+        "No-Assert Test",
+        "Smoke-Only Test"
+      ],
+      "fix_hint": "Add explicit assertions on the observable outcome, or mark the test as an explicit does-not-throw check using the framework's construct.",
+      "severity_default": "warn",
+      "languages": "Java, Kotlin, Python, JS/TS, C#, Ruby, Go",
+      "sources": [
+        "testsmells.org; xUnit Test Patterns (Meszaros); PMD JUnitTestsShouldIncludeAssert"
+      ]
+    },
+    {
+      "id": "CS-184",
+      "name": "Magic-Value Coupling Between Producer and Consumer",
+      "category": "architecture / maintainability",
+      "description": "Two separated modules agree on a raw literal (a status string, error code, route name, queue key, header) duplicated in both producer and consumer, so a change in one silently breaks the other.",
+      "detection": "Cross-file: identical non-trivial string/number literals used in a producer context (set/emit/write) in one module and a consumer context (compare/switch) in another, neither referencing a shared constant. Flag the same literal in a comparison in module A and an assignment in module B.",
+      "determinism": "mechanical",
+      "aliases": [
+        "Duplicated Literal Contract",
+        "Stringly-Typed Protocol",
+        "Implicit Shared Constant"
+      ],
+      "fix_hint": "Define the value once in a shared constant/enum imported by both sides; derive both producer and consumer from it.",
+      "severity_default": "info",
+      "languages": "all",
+      "sources": [
+        "Rastogi 66 Anti-Patterns (multiple-truth-sources family); DRY; refactoring practice"
+      ]
+    },
+    {
+      "id": "CS-185",
+      "name": "Overconfident / Fabricated User-Facing Message",
+      "category": "correctness / AI-generated",
+      "description": "Generated code emits confident success, status, or error messages that do not reflect what the code actually verified (logs success before confirming it, reports a specific cause it never checked, claims completion of work that was stubbed).",
+      "detection": "Reader-judged: compare an emitted message string against the surrounding control flow (a success log on a path that did not confirm success; an error message asserting a specific cause the branch did not establish). Mechanical adjunct: success/completed/saved log statements not dominated by the operation they claim, or inside a catch/empty branch.",
+      "determinism": "bounded-reader",
+      "aliases": [
+        "Lying Log Message",
+        "Premature Success Report",
+        "Fabricated Error Cause"
+      ],
+      "fix_hint": "Emit messages only after verifying the asserted condition; make the message reflect the actual checked outcome.",
+      "severity_default": "warn",
+      "languages": "all",
+      "sources": [
+        "Rastogi 66 Anti-Patterns (theater family); arXiv:2603.28592; error-handling guidance"
+      ]
+    }
+  ],
+  "summary": "Reviewed the 151-entry draft for completeness against the established literature (Fowler/Beck, Suryanarayana design smells, CK/Lanza metrics, the 66 Anti-Patterns, comment/doc-drift research, commit/VCS studies, and test-smell catalogs) and confirmed it is strong on classic, OO-design, metric, comment/documentation, commit/VCS, and test smells. The major gaps were whole requested categories with little or no coverage: concurrency, resource management, security-adjacent maintainability beyond secrets, performance, and several error-handling, naming, and general-correctness smells.\n\nAdded 34 entries (CS-152 through CS-185), preserving all existing ids and their detection/determinism/source fields:\n- Concurrency (CS-152-156): data race / unsynchronized shared state, check-then-act / TOCTOU, inconsistent lock ordering (deadlock), busy-wait spin, fire-and-forget async.\n- Resource management (CS-157): unreleased/leaked resource (file/socket/connection/lock).\n- Security-adjacent maintainability (CS-158-161): SQL/command injection via concatenation, unsafe dynamic eval / insecure deserialization, missing input validation at trust boundary, weak/hardcoded crypto + insecure random.\n- Error-handling (CS-162-166): exception as control flow, log-and-rethrow, swallowed/unchecked error return, overly broad try scope, returning null instead of empty/Optional.\n- Performance (CS-167-171): N+1 query, loop-invariant recomputation, string concatenation in loop, quadratic membership/nested-loop lookup, unbounded resource acquisition.\n- Correctness (CS-172-175): mutable default argument, floating-point equality, self-assignment / copy-paste-variable bug, off-by-one / boundary error.\n- Maintainability/naming/design (CS-176-181, 184): reinventing the standard library, inconsistent naming convention, boolean flag parameter, inconsistent abstraction level, hardcoded environment/config value, layering/architectural dependency violation, magic-value coupling between producer and consumer.\n- Testing (CS-182-183): skipped/disabled test left in suite, test without assertions.\n- AI-generated correctness (CS-185): overconfident/fabricated user-facing message.\n\nFinal corpus total: 185 entries. Determinism breakdown: 137 mechanical, 8 bounded-reader (CS-055, CS-064, CS-082, CS-139, CS-179, CS-185, plus pre-existing), and 40 hybrid. Note the requested mechanical-vs-bounded framing: counting hybrid with its mechanical pre-filter as machine-startable, 177 entries have a mechanical detection path and 8 are purely bounded-reader; treating hybrid as reader-assisted gives 137 fully mechanical, 40 hybrid, 8 bounded-reader."
+}

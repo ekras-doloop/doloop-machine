@@ -1,0 +1,35 @@
+name: "doloop code gate"
+description: "Gate AI-written code on the deterministic doloop donkeys before it merges. Same code in, same verdict out; failures cite the rule and the line."
+branding:
+  icon: "shield"
+  color: "orange"
+inputs:
+  paths:
+    description: "Space-separated files or globs to check. Default: the code files changed in this push or PR."
+    required: false
+    default: ""
+  api:
+    description: "doloop API base URL."
+    required: false
+    default: "https://api.doloop.io"
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      env:
+        DOLOOP_API: ${{ inputs.api }}
+      run: |
+        python3 -m pip install --quiet "git+https://github.com/ekras-doloop/doloop-machine"
+        BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+        if [ -n "${{ inputs.paths }}" ]; then
+          FILES="${{ inputs.paths }}"
+        else
+          FILES=$(git diff --name-only "$BASE" "${{ github.sha }}" 2>/dev/null \
+            | grep -E '\.(c|h|cc|cpp|cxx|hpp|py|js|jsx|ts|tsx|go|rs|java|rb|php)$' || true)
+        fi
+        if [ -z "$FILES" ]; then
+          echo "doloop: no code files changed; nothing to gate."
+          exit 0
+        fi
+        echo "doloop: gating (diff vs $BASE) $FILES"
+        doloop code --diff "$BASE" $FILES

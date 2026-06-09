@@ -1,0 +1,174 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "doloop machine",
+    "version": "0.1.0",
+    "description": "Deterministic, objective checks for AI output. Send an output, get a verdict that is the same every time (same input -> same input_sha256 -> same verdict). Bring your own model; the machine never touches it. Use it to catch an agent looping, drifting, sliding back, or producing slop, and to tie out numbers against a source."
+  },
+  "servers": [{ "url": "https://api.doloop.io" }],
+  "paths": {
+    "/v1/check": {
+      "post": {
+        "summary": "Check an output and get a deterministic verdict",
+        "operationId": "check",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["text"],
+                "properties": { "text": { "type": "string", "description": "the AI output to check" } }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "the verdict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "verdict": { "type": "string", "enum": ["pass", "fail"] },
+                    "finding_count": { "type": "integer" },
+                    "findings": { "type": "array", "items": { "type": "object" } },
+                    "input_sha256": { "type": "string", "description": "hash of the input; identical input gives identical hash gives identical verdict" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/check-code": {
+      "post": {
+        "summary": "Check a code snippet and get a deterministic verdict (code donkey)",
+        "operationId": "checkCode",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["code"],
+                "properties": {
+                  "code": { "type": "string", "description": "the code to check" },
+                  "language": { "type": "string", "description": "language hint, e.g. python; default auto" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "the verdict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "verdict": { "type": "string", "enum": ["pass", "fail"] },
+                    "finding_count": { "type": "integer" },
+                    "findings": { "type": "array", "items": { "type": "object" } },
+                    "input_sha256": { "type": "string", "description": "hash of the input; identical input gives identical hash gives identical verdict" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/check-design": {
+      "post": {
+        "summary": "Check a live URL for visual-hierarchy hygiene (design donkey)",
+        "operationId": "checkDesign",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["url"],
+                "properties": { "url": { "type": "string", "description": "the live page to check" } }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "the verdict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "verdict": { "type": "string", "enum": ["pass", "fail"] },
+                    "findings": { "type": "array", "items": { "type": "object" } },
+                    "counts": { "type": "object", "description": "distinct font sizes / weights / widths / colors" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/check-chart": {
+      "post": {
+        "summary": "Check a chart image (presentations donkey, vision path; not byte-deterministic)",
+        "operationId": "checkChart",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image_url": { "type": "string", "description": "URL of the chart image" },
+                  "image_b64": { "type": "string", "description": "base64 of the chart image" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "the verdict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "verdict": { "type": "string", "enum": ["pass", "fail"] },
+                    "findings": { "type": "array", "items": { "type": "object" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/donkeys": {
+      "get": {
+        "summary": "List the six donkeys (the checks the machine runs)",
+        "operationId": "listDonkeys",
+        "responses": { "200": { "description": "the donkey roster" } }
+      }
+    },
+    "/v1/chat/completions": {
+      "post": {
+        "summary": "OpenAI-compatible BYOL proxy; forwards your call with your key and attaches the verdict",
+        "operationId": "proxyChat",
+        "responses": { "200": { "description": "the provider response with a doloop verdict attached" } }
+      }
+    },
+    "/health": {
+      "get": { "summary": "liveness", "operationId": "health", "responses": { "200": { "description": "ok" } } }
+    }
+  }
+}

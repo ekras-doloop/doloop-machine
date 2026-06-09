@@ -1,0 +1,21 @@
+# Drop this in your repo at .github/workflows/doloop.yml
+# It runs the doloop code donkey on every push and pull request, and fails the
+# build if any changed file fails (a smell or a security gap, cited by rule + line).
+name: doloop
+on: [pull_request, push]
+
+jobs:
+  code-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # full history so the diff resolves
+
+      - uses: ekras-doloop/doloop-machine@main
+        # Optional: pin to specific paths instead of the changed-files default
+        #   with:
+        #     paths: "src/**/*.py include/**/*.h"
+        # Optional: meter against your key + apply your house rules
+        #   env:
+        #     DOLOOP_KEY: ${{ secrets.DOLOOP_KEY }}
