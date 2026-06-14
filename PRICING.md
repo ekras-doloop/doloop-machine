@@ -9,7 +9,7 @@ Metering is **per-surface**:
 - **Prose & document donkeys** — one check = one loop.
 - **Code donkey** — one loop = **one function judged on one feature**. A commit
   costs `changed functions × features` loops; the public, frozen counter is
-  [`loopmath.py`](../machine/loopmath/loopmath.py), so you reproduce the count, you never trust it.
+  [`loops.py`](loops.py), so you reproduce the count, you never trust it.
 
 The plans hide the loop the way Anthropic hides tokens behind Free / Pro / Max —
 one loop underneath them all.
@@ -40,7 +40,7 @@ one loop underneath them all.
 bill = loops_used × published_rate
 ```
 
-Both sides are public and reproducible. Run [`loopmath.py`](../machine/loopmath/loopmath.py)
+Both sides are public and reproducible. Run [`loops.py`](loops.py)
 on your own repo and you get the exact loop count we bill. Nothing about your
 invoice is a black box.
 
