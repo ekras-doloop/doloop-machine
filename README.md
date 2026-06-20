@@ -53,9 +53,9 @@ A donkey is a deterministic check for one kind of output. Choose one with the `d
 curl https://api.doloop.io/v1/donkeys     # the live roster
 ```
 
-## Auth & loops
+## Auth & plans
 
-The standard check is **keyless and free** on the **Free** plan — 100 loops/month anonymous, 1,000/month when you sign in with GitHub. Free is free because it's pooled: you contribute the abstracted lesson back to the public donkeys. Bring a **doloop key** (`dlp_…`, from the dashboard) for **Pro** ($20/mo, 10,000 loops, auto-consistency against your own code), **Max** ($200/mo, 1,000,000 loops, hermetic), or **Enterprise** (contact us, uncapped / on-prem) — metered against your balance, applying your private house rules (the ratchet).
+The standard check is **keyless and free** on the **Free** plan (sign in with GitHub for more). Free is free because it's pooled: you contribute the abstracted lesson back to the public donkeys. Bring a **doloop key** (`dlp_…`, from the dashboard) for **Pro** ($20/mo, auto-consistency against your own code), **Max** ($200/mo, hermetic), or **Enterprise** (contact us, on-prem) — metered against your balance, applying your private house rules (the ratchet). *Metering is being finalized; see [PRICING.md](PRICING.md).*
 
 ```bash
 # keyless: free tier
@@ -66,14 +66,14 @@ curl https://api.doloop.io/v1/check \
   -H 'authorization: Bearer dlp_your_key' \
   -H 'content-type: application/json' \
   -d '{"text":"..."}'
-# response headers: x-doloop-loops-charged, x-doloop-loops-remaining
+# returns your remaining balance in the response headers
 
 # CLI
 export DOLOOP_KEY=dlp_your_key
-doloop loops          # balance remaining
+doloop balance        # balance remaining
 ```
 
-A **loop** is the billing unit, metered per surface: on the prose / document / conversation donkeys one loop = one check ($20 buys 10,000 checks, 100 free every month); on the code donkey one loop = one `function × feature`. See [PRICING.md](PRICING.md).
+Metering is per-surface and reproducible; the details are being finalized. See [PRICING.md](PRICING.md).
 
 ## Endpoints
 
